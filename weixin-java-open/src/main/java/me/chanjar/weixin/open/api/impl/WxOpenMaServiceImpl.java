@@ -5,13 +5,18 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import cn.binarywang.wx.miniapp.json.WxMaGsonBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.Getter;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.open.api.WxOpenComponentService;
+import me.chanjar.weixin.open.api.WxOpenMaBasicService;
 import me.chanjar.weixin.open.api.WxOpenMaService;
 import me.chanjar.weixin.open.bean.ma.WxMaOpenCommitExtInfo;
 import me.chanjar.weixin.open.bean.ma.WxMaQrcodeParam;
+import me.chanjar.weixin.open.bean.ma.WxMaScheme;
 import me.chanjar.weixin.open.bean.message.WxOpenMaSubmitAuditMessage;
 import me.chanjar.weixin.open.bean.result.*;
 import me.chanjar.weixin.open.executor.MaQrCodeRequestExecutor;
@@ -34,11 +39,14 @@ public class WxOpenMaServiceImpl extends WxMaServiceImpl implements WxOpenMaServ
   private final WxOpenComponentService wxOpenComponentService;
   private final WxMaConfig wxMaConfig;
   private final String appId;
+  @Getter
+  private final WxOpenMaBasicService basicService;
 
   public WxOpenMaServiceImpl(WxOpenComponentService wxOpenComponentService, String appId, WxMaConfig wxMaConfig) {
     this.wxOpenComponentService = wxOpenComponentService;
     this.appId = appId;
     this.wxMaConfig = wxMaConfig;
+    this.basicService = new WxOpenMaBasicServiceImpl(this);
     initHttp();
   }
 
@@ -248,6 +256,12 @@ public class WxOpenMaServiceImpl extends WxMaServiceImpl implements WxOpenMaServ
   }
 
   @Override
+  public WxOpenMaHistoryVersionResult getHistoryVersion() throws WxErrorException {
+    String response = get(API_REVERT_CODE_RELEASE, "action=get_history_version");
+    return WxMaGsonBuilder.create().fromJson(response, WxOpenMaHistoryVersionResult.class);
+  }
+
+  @Override
   public WxOpenResult undoCodeAudit() throws WxErrorException {
     String response = get(API_UNDO_CODE_AUDIT, null);
     return WxMaGsonBuilder.create().fromJson(response, WxOpenResult.class);
@@ -345,6 +359,40 @@ public class WxOpenMaServiceImpl extends WxMaServiceImpl implements WxOpenMaServ
     JsonObject params = new JsonObject();
     params.addProperty("prefix", prefix);
     String response = post(API_QRCODE_JUMP_PUBLISH, GSON.toJson(params));
+    return WxMaGsonBuilder.create().fromJson(response, WxOpenResult.class);
+  }
+
+  @Override
+  public WxMaScheme generateMaScheme(String jumpWxaPath, String jumpWxaQuery, Boolean isExpire, Long expireTime) throws WxErrorException {
+    JsonObject jumpWxa = null;
+    if (jumpWxaPath != null && jumpWxaQuery != null) {
+      jumpWxa = new JsonObject();
+      jumpWxa.addProperty("path", jumpWxaPath);
+      jumpWxa.addProperty("query", jumpWxaQuery);
+    }
+
+    JsonObject params = new JsonObject();
+    if (jumpWxa != null) {
+      params.add("jump_wxa", jumpWxa);
+    }
+    if (isExpire != null) {
+      params.addProperty("is_expire", isExpire);
+    }
+    if (expireTime != null) {
+      params.addProperty("expire_time", expireTime);
+    }
+
+    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+    String response = post(API_GENERATE_SCHEME, gson.toJson(params));
+
+    return WxMaGsonBuilder.create().fromJson(response, WxMaScheme.class);
+  }
+
+  @Override
+  public WxOpenResult registerShopComponent() throws WxErrorException {
+    JsonObject params = new JsonObject();
+    String response = post(API_REGISTER_SHOP_COMPONENT, GSON.toJson(params));
     return WxMaGsonBuilder.create().fromJson(response, WxOpenResult.class);
   }
 
