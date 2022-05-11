@@ -285,6 +285,15 @@ public class WxCpXmlMessage implements Serializable {
   private String email;
 
   /**
+   * 企业邮箱;代开发自建应用不返回该字段。
+   * ISSUE#2584
+   * @see <a href="https://developer.work.weixin.qq.com/document/path/90970">Link</a>
+   */
+  @XStreamAlias("BizMail")
+  @XStreamConverter(value = XStreamCDataConverter.class)
+  private String bizMail;
+
+  /**
    * 头像url。注：如果要获取小图将url最后的”/0”改成”/100”即可.
    */
   @XStreamAlias("Avatar")
@@ -765,11 +774,10 @@ public class WxCpXmlMessage implements Serializable {
 
       /**
        * 节点分支审批人审批意见附件，赋值为media_id具体使用请参考：文档-获取临时素材
-       * TODO 居然可以返回多个，坑爹的，暂时屏蔽注解以免报错，有兴趣挑战的，尽管把代码砸过来吧！
-       * 请先通过allFieldsMap解析需要的参数！
        */
-      // @XStreamAlias("Attach")
-      private String attach;
+      @XStreamAlias("Attach")
+      @XStreamImplicit
+      private List<String> attach;
     }
 
     /**
