@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * The type Content value.
+ *
  * @author element
  */
 @Data
@@ -45,6 +47,12 @@ public class ContentValue implements Serializable {
   @SerializedName("date_range")
   private Attendance.DataRange dateRange;
 
+  @SerializedName("punch_correction")
+  private PunchCorrection punchCorrection;
+
+  /**
+   * The type Date.
+   */
   @Data
   public static class Date implements Serializable {
     private static final long serialVersionUID = -6181554080062231138L;
@@ -54,12 +62,18 @@ public class ContentValue implements Serializable {
     private String timestamp;
   }
 
+  /**
+   * The type Selector.
+   */
   @Data
   public static class Selector implements Serializable {
     private static final long serialVersionUID = 7305458759126951773L;
     private String type;
     private List<Option> options;
 
+    /**
+     * The type Option.
+     */
     @Data
     public static class Option implements Serializable {
       private static final long serialVersionUID = -3471071106328280252L;
@@ -71,6 +85,9 @@ public class ContentValue implements Serializable {
 
   }
 
+  /**
+   * The type Member.
+   */
   @Data
   public static class Member implements Serializable {
     private static final long serialVersionUID = 1316551341955496067L;
@@ -80,6 +97,9 @@ public class ContentValue implements Serializable {
     private String name;
   }
 
+  /**
+   * The type Department.
+   */
   @Data
   public static class Department implements Serializable {
     private static final long serialVersionUID = -2513762192924826234L;
@@ -89,6 +109,9 @@ public class ContentValue implements Serializable {
     private String name;
   }
 
+  /**
+   * The type File.
+   */
   @Data
   public static class File implements Serializable {
     private static final long serialVersionUID = 3890971381800855142L;
@@ -97,12 +120,18 @@ public class ContentValue implements Serializable {
     private String fileId;
   }
 
+  /**
+   * The type Child.
+   */
   @Data
   public static class Child implements Serializable {
     private static final long serialVersionUID = -3500102073821161558L;
     private List<ApplyDataContent> list;
   }
 
+  /**
+   * The type Attendance.
+   */
   @Data
   public static class Attendance implements Serializable {
     private static final long serialVersionUID = -6627566040706594166L;
@@ -110,6 +139,9 @@ public class ContentValue implements Serializable {
     private DataRange dateRange;
     private Integer type;
 
+    /**
+     * The type Data range.
+     */
     @Data
     public static class DataRange implements Serializable {
       private static final long serialVersionUID = -3411836592583718255L;
@@ -123,6 +155,9 @@ public class ContentValue implements Serializable {
     }
   }
 
+  /**
+   * The type Vacation.
+   */
   @Data
   public static class Vacation implements Serializable {
     private static final long serialVersionUID = 2120523160034749170L;
@@ -162,11 +197,24 @@ public class ContentValue implements Serializable {
     private String spNo;
   }
 
+  /**
+   * The type Template name.
+   */
   @Data
   public static class TemplateName implements Serializable {
     private static final long serialVersionUID = 3152481506054355937L;
     private String text;
     private String lang;
+  }
+
+  /**
+   * The type Punch correction.
+   */
+  @Data
+  public static class PunchCorrection implements Serializable {
+    private static final long serialVersionUID = 2120523160034749170L;
+    private String state;
+    private Long time;
   }
 
 }

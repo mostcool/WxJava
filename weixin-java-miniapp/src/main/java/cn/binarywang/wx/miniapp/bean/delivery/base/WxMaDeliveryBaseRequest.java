@@ -16,7 +16,7 @@ import java.io.Serializable;
  *
  * @author Luo
  * @version 1.0
- * @date 2021-10-14 10:36
+ * created on  2021-10-14 10:36
  */
 @Data
 @Accessors(chain = true)
@@ -113,7 +113,8 @@ public abstract class WxMaDeliveryBaseRequest implements Serializable {
             str = str.concat(getShopOrderId());
         }
         str = str.concat(getAppSecret());
-        return DigestUtils.sha1Hex(str);
+        this.deliverySign = DigestUtils.sha1Hex(str);
+        return this.deliverySign;
     }
 
 }

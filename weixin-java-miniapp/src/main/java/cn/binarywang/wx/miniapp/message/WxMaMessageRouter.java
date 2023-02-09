@@ -7,6 +7,7 @@ import lombok.Data;
 import me.chanjar.weixin.common.api.WxErrorExceptionHandler;
 import me.chanjar.weixin.common.api.WxMessageDuplicateChecker;
 import me.chanjar.weixin.common.api.WxMessageInMemoryDuplicateChecker;
+import me.chanjar.weixin.common.api.WxMessageInMemoryDuplicateCheckerSingleton;
 import me.chanjar.weixin.common.session.InternalSession;
 import me.chanjar.weixin.common.session.InternalSessionManager;
 import me.chanjar.weixin.common.session.StandardSessionManager;
@@ -48,7 +49,7 @@ public class WxMaMessageRouter {
       0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), namedThreadFactory);
     this.sessionManager = new StandardSessionManager();
     this.exceptionHandler = new LogExceptionHandler();
-    this.messageDuplicateChecker = new WxMessageInMemoryDuplicateChecker();
+    this.messageDuplicateChecker = WxMessageInMemoryDuplicateCheckerSingleton.getInstance();
   }
 
   /**
@@ -59,7 +60,7 @@ public class WxMaMessageRouter {
     this.executorService = executorService;
     this.sessionManager = new StandardSessionManager();
     this.exceptionHandler = new LogExceptionHandler();
-    this.messageDuplicateChecker = new WxMessageInMemoryDuplicateChecker();
+    this.messageDuplicateChecker = WxMessageInMemoryDuplicateCheckerSingleton.getInstance();
   }
 
   /**
@@ -106,7 +107,7 @@ public class WxMaMessageRouter {
   /**
    * 处理微信消息.
    */
-  private WxMaXmlOutMessage route(final WxMaMessage wxMessage, final Map<String, Object> context) {
+  public WxMaXmlOutMessage route(final WxMaMessage wxMessage, final Map<String, Object> context) {
     if (isMsgDuplicated(wxMessage)) {
       // 如果是重复消息，那么就不做处理
       return null;
@@ -180,6 +181,10 @@ public class WxMaMessageRouter {
 
     if (StringUtils.isNotEmpty(wxMessage.getToUser())) {
       messageId.append("-").append(wxMessage.getToUser());
+    }
+
+    if (StringUtils.isNotEmpty(wxMessage.getTraceId())) {
+      messageId.append("-").append(wxMessage.getTraceId());
     }
 
     return this.messageDuplicateChecker.isDuplicate(messageId.toString());

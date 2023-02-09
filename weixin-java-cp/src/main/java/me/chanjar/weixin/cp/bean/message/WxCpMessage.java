@@ -27,26 +27,99 @@ import static me.chanjar.weixin.common.api.WxConsts.KefuMsgType.*;
 public class WxCpMessage implements Serializable {
   private static final long serialVersionUID = -2082278303476631708L;
 
+  /**
+   * 指定接收消息的成员，成员ID列表（多个接收者用‘|’分隔，最多支持1000个）。
+   * 特殊情况：指定为"@all"，则向该企业应用的全部成员发送
+   */
   private String toUser;
+  /**
+   * 指定接收消息的部门，部门ID列表，多个接收者用‘|’分隔，最多支持100个。
+   * 当touser为"@all"时忽略本参数
+   */
   private String toParty;
+  /**
+   * 指定接收消息的标签，标签ID列表，多个接收者用‘|’分隔，最多支持100个。
+   * 当touser为"@all"时忽略本参数
+   */
   private String toTag;
+  /**
+   * 企业应用的id，整型。企业内部开发，可在应用的设置页面查看；第三方服务商，可通过接口 获取企业授权信息 获取该参数值
+   */
   private Integer agentId;
+  /**
+   * 消息类型
+   * 文本消息: text
+   * 图片消息: image
+   * 语音消息: voice
+   * 视频消息: video
+   * 文件消息: file
+   * 文本卡片消息: textcard
+   * 图文消息: news
+   * 图文消息: mpnews
+   * markdown消息: markdown
+   * 模板卡片消息: template_card
+   */
   private String msgType;
+  /**
+   * 消息内容，最长不超过2048个字节，超过将截断（支持id转译）
+   */
   private String content;
+  /**
+   * 媒体文件id，可以调用上传临时素材接口获取
+   */
   private String mediaId;
+  /**
+   * 图文消息缩略图的media_id, 可以通过素材管理接口获得。此处thumb_media_id即上传接口返回的media_id
+   */
   private String thumbMediaId;
+  /**
+   * 标题，不超过128个字节，超过会自动截断（支持id转译）
+   */
   private String title;
+  /**
+   * 描述，不超过512个字节，超过会自动截断（支持id转译）
+   */
   private String description;
   private String musicUrl;
   private String hqMusicUrl;
+  /**
+   * 表示是否是保密消息，默认为0；注意仅 mpnews 类型的消息支持safe值为2，其他消息类型不支持
+   * 0表示可对外分享
+   * 1表示不能分享且内容显示水印
+   * 2表示仅限在企业内分享
+   */
   private String safe;
+  /**
+   * 点击后跳转的链接。最长2048字节，请确保包含了协议头(http/https)
+   */
   private String url;
+  /**
+   * 按钮文字。 默认为“详情”， 不超过4个文字，超过自动截断。
+   */
   private String btnTxt;
+  /**
+   * 图文消息，一个图文消息支持1到8条图文
+   */
   private List<NewArticle> articles = new ArrayList<>();
+  /**
+   * 图文消息，一个图文消息支持1到8条图文
+   */
   private List<MpnewsArticle> mpnewsArticles = new ArrayList<>();
+  /**
+   * 小程序appid，必须是与当前应用关联的小程序，appid和pagepath必须同时填写，填写后会忽略url字段
+   */
   private String appId;
+  /**
+   * 点击消息卡片后的小程序页面，最长1024个字节，仅限本小程序内的页面。该字段不填则消息点击后不跳转。
+   */
   private String page;
+  /**
+   * 是否放大第一个content_item
+   */
   private Boolean emphasisFirstItem;
+  /**
+   * 消息内容键值对，最多允许10个item
+   */
   private Map<String, String> contentItems;
 
   /**
@@ -111,10 +184,16 @@ public class WxCpMessage implements Serializable {
    * 一级标题，建议不超过36个字
    */
   private String mainTitleTitle;
+
   /**
    * 标题辅助信息，建议不超过44个字
    */
   private String mainTitleDesc;
+
+  /**
+   * 左图右文样式，news_notice类型的卡片，card_image 和 image_text_area 两者必填一个字段，不可都不填
+   */
+  private TemplateCardImageTextArea imageTextArea;
 
   /**
    * 图文展示型的卡片必须有图片字段。
@@ -178,6 +257,12 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 按钮交互型卡片需指定。
+   * button_selection
+   */
+  private TemplateCardButtonSelection buttonSelection;
+
+  /**
+   * 按钮交互型卡片需指定。
    * 按钮列表，该字段可为空数组，但有数据的话需确认对应字段是否必填，列表长度不超过6
    */
   private List<TemplateCardButton> buttons;
@@ -219,6 +304,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得文本消息builder.
+   *
+   * @return the text builder
    */
   public static TextBuilder TEXT() {
     return new TextBuilder();
@@ -226,6 +313,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得文本卡片消息builder.
+   *
+   * @return the text card builder
    */
   public static TextCardBuilder TEXTCARD() {
     return new TextCardBuilder();
@@ -233,6 +322,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得图片消息builder.
+   *
+   * @return the image builder
    */
   public static ImageBuilder IMAGE() {
     return new ImageBuilder();
@@ -240,6 +331,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得语音消息builder.
+   *
+   * @return the voice builder
    */
   public static VoiceBuilder VOICE() {
     return new VoiceBuilder();
@@ -247,6 +340,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得视频消息builder.
+   *
+   * @return the video builder
    */
   public static VideoBuilder VIDEO() {
     return new VideoBuilder();
@@ -254,6 +349,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得图文消息builder.
+   *
+   * @return the news builder
    */
   public static NewsBuilder NEWS() {
     return new NewsBuilder();
@@ -261,6 +358,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得mpnews图文消息builder.
+   *
+   * @return the mpnews builder
    */
   public static MpnewsBuilder MPNEWS() {
     return new MpnewsBuilder();
@@ -268,6 +367,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得markdown消息builder.
+   *
+   * @return the markdown msg builder
    */
   public static MarkdownMsgBuilder MARKDOWN() {
     return new MarkdownMsgBuilder();
@@ -275,6 +376,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得文件消息builder.
+   *
+   * @return the file builder
    */
   public static FileBuilder FILE() {
     return new FileBuilder();
@@ -282,6 +385,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得任务卡片消息builder.
+   *
+   * @return the task card builder
    */
   public static TaskCardBuilder TASKCARD() {
     return new TaskCardBuilder();
@@ -289,6 +394,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得任务卡片消息builder.
+   *
+   * @return the template card builder
    */
   public static TemplateCardBuilder TEMPLATECARD() {
     return new TemplateCardBuilder();
@@ -296,6 +403,8 @@ public class WxCpMessage implements Serializable {
 
   /**
    * 获得小程序通知消息builder.
+   *
+   * @return the mini program notice msg builder
    */
   public static MiniProgramNoticeMsgBuilder newMiniProgramNoticeBuilder() {
     return new MiniProgramNoticeMsgBuilder();
@@ -323,6 +432,11 @@ public class WxCpMessage implements Serializable {
     this.msgType = msgType;
   }
 
+  /**
+   * To json string.
+   *
+   * @return the string
+   */
   public String toJson() {
     JsonObject messageJson = new JsonObject();
     if (this.getAgentId() != null) {
@@ -524,6 +638,10 @@ public class WxCpMessage implements Serializable {
           template.add("main_title", mainTitle);
         }
 
+        if (this.getImageTextArea() != null) {
+          template.add("image_text_area", this.getImageTextArea().toJson());
+        }
+
         if (StringUtils.isNotBlank(this.getCardImageUrl()) || this.getCardImageAspectRatio() != null) {
           JsonObject cardImage = new JsonObject();
           if (StringUtils.isNotBlank(this.getCardImageUrl())) {
@@ -598,6 +716,11 @@ public class WxCpMessage implements Serializable {
             cardAction.addProperty("pagepath", this.getCardActionPagepath());
           }
           template.add("card_action", cardAction);
+        }
+
+        TemplateCardButtonSelection buttonSelection = this.getButtonSelection();
+        if (null != buttonSelection) {
+          template.add("button_selection", buttonSelection.toJson());
         }
 
         List<TemplateCardButton> buttons = this.getButtons();

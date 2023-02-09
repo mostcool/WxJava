@@ -165,6 +165,17 @@ public interface WxPayService {
   String getV3(String url) throws WxPayException;
 
   /**
+   * 发送get请求，得到响应字符串.
+   * <p>
+   * 部分字段会包含敏感信息，所以在提交前需要在请求头中会包含"Wechatpay-Serial"信息
+   *
+   * @param url        请求地址
+   * @return 返回请求结果字符串 string
+   * @throws WxPayException the wx pay exception
+   */
+  String getV3WithWechatPaySerial(String url) throws WxPayException;
+
+  /**
    * 发送下载 V3请求，得到响应流.
    *
    * @param url 请求地址
@@ -292,6 +303,13 @@ public interface WxPayService {
    * @return the marketing favor service
    */
   MarketingBusiFavorService getMarketingBusiFavorService();
+
+  /**
+   * 获取商家转账到零钱服务类
+   *
+   * @return the merchant transfer service
+   */
+  MerchantTransferService getMerchantTransferService();
 
   /**
    * 设置企业付款服务类，允许开发者自定义实现类.
@@ -1174,7 +1192,7 @@ public interface WxPayService {
   /**
    * <pre>
    * 获取仿真测试系统的验签密钥.
-   * 请求Url： https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey
+   * 请求Url： https://api.mch.weixin.qq.com/xdc/apiv2getsignkey/sign/getsignkey
    * 是否需要证书： 否
    * 请求方式： POST
    * 文档地址：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=23_1
@@ -1337,4 +1355,26 @@ public interface WxPayService {
    * @return the complaints service
    */
   ComplaintService getComplaintsService();
+
+
+  /**
+   * 获取银行组件服务
+   *
+   * @return 银行组件服务
+   */
+  BankService getBankService();
+
+  /**
+   * 获取商家转账到零钱服务类.
+   *
+   * @return the transfers service
+   */
+  TransferService getTransferService();
+
+  /**
+   * 获取服务商支付分服务类
+   * @return the partner pay score service
+   */
+  PartnerPayScoreService getPartnerPayScoreService();
+
 }

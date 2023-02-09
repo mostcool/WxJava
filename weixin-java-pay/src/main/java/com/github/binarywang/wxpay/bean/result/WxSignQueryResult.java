@@ -12,7 +12,7 @@ import java.io.Serializable;
 
 /**
  * @author chenliang
- * @date 2021-08-02 5:40 下午
+ * created on  2021-08-02 5:40 下午
  *
  * <pre>
  *   微信签约查询返回结果
@@ -22,6 +22,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@XStreamAlias("xml")
 public class WxSignQueryResult extends BaseWxPayResult implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -29,7 +30,7 @@ public class WxSignQueryResult extends BaseWxPayResult implements Serializable {
   /**
    * 委托代扣协议ID
    */
-  @XStreamAlias("contractId")
+  @XStreamAlias("contract_id")
   private String contractId;
 
   /**

@@ -13,6 +13,8 @@ import java.io.Serializable;
  *  用oauth2获取用户信息的结果类
  *  Created by BinaryWang on 2019/5/26.
  * </pre>
+ * <p>
+ * 文档1：https://developer.work.weixin.qq.com/document/path/91707
  *
  * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
@@ -30,4 +32,7 @@ public class WxCpOauth2UserInfo implements Serializable {
   private String userTicket;
   private String expiresIn;
   private String externalUserId;
+  private String parentUserId;
+  private String studentUserId;
+
 }

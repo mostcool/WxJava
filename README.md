@@ -4,8 +4,8 @@
 [![Github](https://img.shields.io/github/stars/Wechat-Group/WxJava?logo=github&style=flat)](https://github.com/Wechat-Group/WxJava)
 [![GitHub release](https://img.shields.io/github/release/Wechat-Group/WxJava.svg)](https://github.com/Wechat-Group/WxJava/releases)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.binarywang/wx-java.svg)](http://mvnrepository.com/artifact/com.github.binarywang/wx-java)
-[![Build Status](https://travis-ci.com/Wechat-Group/WxJava.svg?branch=develop)](https://travis-ci.com/Wechat-Group/WxJava)
-[![使用IntelliJ IDEA开发维护](https://img.shields.io/badge/IntelliJ%20IDEA-提供支持-blue.svg)](https://www.jetbrains.com/?from=WxJava-weixin-java-tools)
+[![Build Status](https://img.shields.io/circleci/project/github/Wechat-Group/WxJava/develop.svg?sanitize=true)](https://circleci.com/gh/Wechat-Group/WxJava/tree/develop)
+[![使用IntelliJ IDEA开发维护](https://img.shields.io/badge/IntelliJ%20IDEA-支持-blue.svg)](https://www.jetbrains.com/?from=WxJava-weixin-java-tools)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 #### 微信`Java`开发工具包，支持包括微信支付、开放平台、公众号、企业微信/企业号、小程序等微信功能模块的后端开发。
@@ -17,7 +17,7 @@
   <tr>
     <td align="center" valign="middle" colspan="3">
       <a href="http://www.ccflow.org/?from=wxjava" target="_blank">
-        <img height="120" src="https://gitee.com/binary/weixin-java-tools/raw/develop/images/banners/ccflow.png" alt="">
+        <img height="120" src="http://binary.ac.cn/images/banners/ccflow.png" alt="">
       </a>
     </td>
   </tr>
@@ -31,17 +31,17 @@
   <tr>
     <td align="left" valign="middle">
       <a href="http://mp.weixin.qq.com/mp/homepage?__biz=MzI3MzAwMzk4OA==&hid=1&sn=f31af3bf562b116b061c9ab4edf70b61&scene=18#wechat_redirect" target="_blank">
-        <img height="120" src="https://gitee.com/binary/weixin-java-tools/raw/develop/images/qrcodes/mp.png" alt="">
+        <img height="120" src="http://binary.ac.cn/images/qrcodes/mp.png" alt="">
       </a>
     </td>
     <td valign="middle">
       <a href="https://www.diboot.com/" target="_blank">
-        <img height="120" src="https://gitee.com/binary/weixin-java-tools/raw/develop/images/banners/diboot.png" alt="diboot低代码开发平台"/>
+        <img height="120" src="http://binary.ac.cn/images/banners/diboot.png" alt="diboot低代码开发平台"/>
       </a>
     </td>
     <td align="right" valign="middle">
       <a href="https://promotion.aliyun.com/ntms/act/qwbk.html?userCode=7makzf5h" target="_blank">
-        <img height="120" src="https://gitee.com/binary/weixin-java-tools/raw/develop/images/banners/aliyun.jpg" alt="">
+        <img height="120" src="http://binary.ac.cn/images/banners/aliyun.jpg" alt="">
       </a>
     </td>
   </tr>
@@ -49,7 +49,7 @@
 
 ### 重要信息
 1. 项目合作洽谈请联系微信`binary0000`（在微信里自行搜索并添加好友，请注明来意，如有关于SDK问题需讨论请参考下文入群讨论，不要加此微信）。
-2. **2022-4-10 发布 [【4.3.0正式版】](https://mp.weixin.qq.com/s/yCsa7nD4_DLjW1RDcrEk6g)**！
+2. **2022-8-21 发布 [【4.4.0正式版】](https://mp.weixin.qq.com/s/kHg-QHMK6ymbQwTdKFF2lQ)**！
 3. 贡献源码可以参考视频：[【贡献源码全过程（上集）】](https://mp.weixin.qq.com/s/3xUZSATWwHR_gZZm207h7Q)、[【贡献源码全过程（下集）】](https://mp.weixin.qq.com/s/nyzJwVVoYSJ4hSbwyvTx9A) ，友情提供：[程序员小山与Bug](https://space.bilibili.com/473631007)
 4. 新手重要提示：本项目仅是一个SDK开发工具包，未提供Web实现，建议使用 `maven` 或 `gradle` 引用本项目即可使用本SDK提供的各种功能，详情可参考 **[【Demo项目】](demo.md)** 或本项目中的部分单元测试代码；
 5. 微信开发新手请务必阅读【开发文档】（[Gitee Wiki](https://gitee.com/binary/weixin-java-tools/wikis/Home) 或者 [Github Wiki](https://github.com/Wechat-Group/WxJava/wiki)）的常见问题部分，可以少走很多弯路，节省不少时间。
@@ -80,7 +80,7 @@
 <dependency>
   <groupId>com.github.binarywang</groupId>
   <artifactId>（不同模块参考下文）</artifactId>
-  <version>4.3.0</version>
+  <version>4.4.0</version>
 </dependency>
 ```
 
@@ -182,6 +182,7 @@
 1. [007gzs](https://github.com/007gzs)
 1. [Silloy](https://github.com/silloy)
 1. [mgcnrx11](https://github.com/mgcnrx11)
+1. [0katekate0 (Wang_Wong)](https://github.com/0katekate0)
 1. [yuanqixun](https://github.com/yuanqixun)
 1. [kakotor](https://github.com/kakotor)
 1. [aimilin6688 (Jonk)](https://github.com/aimilin6688)

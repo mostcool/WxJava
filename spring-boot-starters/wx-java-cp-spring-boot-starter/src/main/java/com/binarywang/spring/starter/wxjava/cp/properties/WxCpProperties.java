@@ -10,7 +10,7 @@ import java.io.Serializable;
  * 企业微信接入相关配置属性
  *
  * @author yl
- * @date 2021/12/6
+ * created on  2021/12/6
  */
 @Data
 @NoArgsConstructor
@@ -38,6 +38,10 @@ public class WxCpProperties {
    * 微信企业号应用 EncodingAESKey
    */
   private String aesKey;
+  /**
+   * 微信企业号应用 会话存档私钥
+   */
+  private String msgAuditPriKey;
   /**
    * 微信企业号应用 会话存档类库路径
    */

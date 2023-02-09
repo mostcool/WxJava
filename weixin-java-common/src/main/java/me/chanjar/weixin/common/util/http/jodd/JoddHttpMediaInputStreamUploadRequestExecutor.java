@@ -4,7 +4,7 @@ import jodd.http.HttpConnectionProvider;
 import jodd.http.HttpRequest;
 import jodd.http.HttpResponse;
 import jodd.http.ProxyInfo;
-import jodd.http.up.ByteArrayUploadable;
+import jodd.http.upload.ByteArrayUploadable;
 import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
  * 文件输入流上传.
  *
  * @author meiqin.zhou91@gmail.com
- * @date 2022/02/15
+ * created on  2022/02/15
  */
 public class JoddHttpMediaInputStreamUploadRequestExecutor extends MediaInputStreamUploadRequestExecutor<HttpConnectionProvider, ProxyInfo> {
   public JoddHttpMediaInputStreamUploadRequestExecutor(RequestHttp requestHttp) {

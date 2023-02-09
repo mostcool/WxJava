@@ -2,9 +2,15 @@ package me.chanjar.weixin.cp.constant;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * The type Wx cp tp consts.
+ */
 public class WxCpTpConsts {
 
 
+  /**
+   * The type Info type.
+   */
   @UtilityClass
   public static class InfoType {
     /**
@@ -26,6 +32,21 @@ public class WxCpTpConsts {
      * 从企业微信应用市场发起授权时,取消授权通知
      */
     public static final String CANCEL_AUTH = "cancel_auth";
+
+    /**
+     * 企业互联共享应用事件回调
+     */
+    public static final String SHARE_AGENT_CHANGE = "share_agent_change";
+
+    /**
+     * 重置永久授权码通知
+     */
+    public static final String RESET_PERMANENT_CODE = "reset_permanent_code";
+
+    /**
+     * 应用管理员变更通知
+     */
+    public static final String CHANGE_APP_ADMIN = "change_app_admin";
 
     /**
      * 通讯录变更通知
@@ -71,6 +92,23 @@ public class WxCpTpConsts {
      * 付费版本变更通知
      */
     public static final String CHANGE_EDITION = "change_editon";
+
+
+    /**
+     * 接口许可失效通知
+     */
+    public static final String UNLICENSED_NOTIFY = "unlicensed_notify";
+
+    /**
+     * 支付成功通知
+     */
+    public static final String LICENSE_PAY_SUCCESS = "license_pay_success";
+
+    /**
+     * 退款结果通知
+     */
+    public static final String LICENSE_REFUND = "license_refund";
+
 
   }
 

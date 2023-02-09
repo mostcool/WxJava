@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
-import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -18,7 +17,7 @@ import javax.crypto.spec.SecretKeySpec;
  * 服务端网络相关接口
  *
  * @author <a href="https://github.com/chutian0124">chutian0124</a>
- * @Date 2021-09-06
+ * created on  2021-09-06
  */
 @RequiredArgsConstructor
 public class WxMaInternetServiceImpl implements WxMaInternetService {
@@ -54,7 +53,6 @@ public class WxMaInternetServiceImpl implements WxMaInternetService {
     return getWxMaInternetResponse(url);
   }
 
-  @NotNull
   private WxMaInternetResponse getWxMaInternetResponse(String url) throws WxErrorException {
     String responseContent = this.wxMaService.post(url, "");
     WxMaInternetResponse response = WxMaGsonBuilder.create().fromJson(responseContent, WxMaInternetResponse.class);

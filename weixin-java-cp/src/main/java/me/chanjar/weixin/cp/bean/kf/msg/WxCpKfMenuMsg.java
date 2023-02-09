@@ -1,15 +1,18 @@
 package me.chanjar.weixin.cp.bean.kf.msg;
 
 import com.google.gson.annotations.SerializedName;
-import java.util.List;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 /**
- * @author leiin
- * @date 2022/1/26 6:33 下午
+ * The type Wx cp kf menu msg.
+ *
+ * @author leiin  created on  2022/1/26 6:33 下午
  */
 @NoArgsConstructor
 @Data
@@ -35,6 +38,9 @@ public class WxCpKfMenuMsg {
   @SerializedName("tail_content")
   private String tailContent;
 
+  /**
+   * The type Wx cp kf menu item.
+   */
   @NoArgsConstructor
   @Data
   public static class WxCpKfMenuItem {
@@ -59,8 +65,15 @@ public class WxCpKfMenuMsg {
      */
     @SerializedName("miniprogram")
     private MiniProgram miniProgram;
+    /**
+     * type为text的菜单项
+     */
+    private MenuText text;
   }
 
+  /**
+   * The type Menu click.
+   */
   @Getter
   @Setter
   public static class MenuClick {
@@ -81,6 +94,9 @@ public class WxCpKfMenuMsg {
     private String content;
   }
 
+  /**
+   * The type Menu view.
+   */
   @Getter
   @Setter
   public static class MenuView {
@@ -100,6 +116,9 @@ public class WxCpKfMenuMsg {
     private String content;
   }
 
+  /**
+   * The type Mini program.
+   */
   @Getter
   @Setter
   public static class MiniProgram {
@@ -121,6 +140,23 @@ public class WxCpKfMenuMsg {
     /**
      * <pre>
      *   菜单显示内容。不多于1024字节
+     * </pre>
+     */
+    private String content;
+  }
+  
+  /**
+   * 
+   * The type Menu text.
+   *
+   */
+  @Getter
+  @Setter
+  public static class MenuText {
+    /**
+     * <pre>
+     *   是否必须：是
+     *   说明：文本内容，支持\n（\和n两个字符）换行。不少于1字节 不多于256字节
      * </pre>
      */
     private String content;

@@ -5,12 +5,14 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.util.json.WxGsonBuilder;
 import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.api.WxCpTaskCardService;
+import me.chanjar.weixin.cp.bean.message.TemplateCardMessage;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.TaskCard.*;
+import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.TaskCard.UPDATE_TASK_CARD;
+import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.TaskCard.UPDATE_TEMPLATE_CARD;
 
 /**
  * <pre>
@@ -18,8 +20,7 @@ import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.TaskCard.*;
  *  Created by Jeff on 2019-05-16.
  * </pre>
  *
- * @author <a href="https://github.com/domainname">Jeff</a>
- * @date 2019-05-16
+ * @author <a href="https://github.com/domainname">Jeff</a> created on  2019-05-16
  */
 @RequiredArgsConstructor
 public class WxCpTaskCardServiceImpl implements WxCpTaskCardService {
@@ -33,7 +34,8 @@ public class WxCpTaskCardServiceImpl implements WxCpTaskCardService {
     data.put("userids", userIds);
     data.put("agentid", agentId);
     data.put("task_id", taskId);
-    data.put("replace_name", replaceName);
+    // 文档地址：https://open.work.weixin.qq.com/wwopen/devtool/interface?doc_id=16386
+    data.put("clicked_key", replaceName);
 
     String url = this.mainService.getWxCpConfigStorage().getApiUrl(UPDATE_TASK_CARD);
     this.mainService.post(url, WxGsonBuilder.create().toJson(data));
@@ -41,8 +43,8 @@ public class WxCpTaskCardServiceImpl implements WxCpTaskCardService {
 
   @Override
   public void updateTemplateCardButton(List<String> userIds, List<Integer> partyIds,
-                                 List<Integer> tagIds, Integer atAll,
-                                 String responseCode, String replaceName) throws WxErrorException {
+                                       List<Integer> tagIds, Integer atAll,
+                                       String responseCode, String replaceName) throws WxErrorException {
     Integer agentId = this.mainService.getWxCpConfigStorage().getAgentId();
     Map<String, Object> data = new HashMap<>(7);
     data.put("userids", userIds);
@@ -58,5 +60,11 @@ public class WxCpTaskCardServiceImpl implements WxCpTaskCardService {
     String url = this.mainService.getWxCpConfigStorage().getApiUrl(UPDATE_TEMPLATE_CARD);
     this.mainService.post(url, WxGsonBuilder.create().toJson(data));
 
+  }
+
+  @Override
+  public void updateTemplateCardButton(TemplateCardMessage templateCardMessage) throws WxErrorException {
+    String url = this.mainService.getWxCpConfigStorage().getApiUrl(UPDATE_TEMPLATE_CARD);
+    this.mainService.post(url, WxGsonBuilder.create().toJson(templateCardMessage));
   }
 }

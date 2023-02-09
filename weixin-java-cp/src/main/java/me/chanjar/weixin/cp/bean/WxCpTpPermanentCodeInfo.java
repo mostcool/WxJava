@@ -47,11 +47,29 @@ public class WxCpTpPermanentCodeInfo extends WxCpBaseResp {
   private AuthUserInfo authUserInfo;
 
   /**
+   * 推广二维码安装相关信息
+   */
+  @SerializedName("register_code_info")
+  private RegisterCodeInfo registerCodeInfo;
+
+  /**
    * 企业当前生效的版本信息
    */
   @SerializedName("edition_info")
   private EditionInfo editionInfo;
 
+  /**
+   * 安装应用时，扫码或者授权链接中带的state值。详见state说明
+   * state说明：
+   * 目前会返回state包含以下几个场景。
+   * （1）扫带参二维码授权代开发模版。
+   */
+  @SerializedName("state")
+  private String state;
+
+  /**
+   * The type Auth corp info.
+   */
   @Getter
   @Setter
   public static class AuthCorpInfo implements Serializable {
@@ -148,6 +166,9 @@ public class WxCpTpPermanentCodeInfo extends WxCpBaseResp {
 
   }
 
+  /**
+   * The type Agent.
+   */
   @Getter
   @Setter
   public static class Agent implements Serializable {
@@ -229,7 +250,7 @@ public class WxCpTpPermanentCodeInfo extends WxCpBaseResp {
      * </ul>
      */
     @SerializedName("user_limit")
-    private Integer userLimit;
+    private Long userLimit;
 
     /**
      * 版本到期时间, 秒级时间戳, 根据需要自行乘以1000（根据购买版本，可能是试用到期时间或付费使用到期时间）。
@@ -271,6 +292,40 @@ public class WxCpTpPermanentCodeInfo extends WxCpBaseResp {
 
     @SerializedName("avatar")
     private String avatar;
+
+    /**
+     * 授权管理员的open_userid，可能为空
+     */
+    @SerializedName("open_userid")
+    private String openUserid;
+  }
+
+  /**
+   * 推广二维码安装相关信息
+   */
+  @Getter
+  @Setter
+  public static class RegisterCodeInfo implements Serializable {
+    private static final long serialVersionUID = -5028321625140879571L;
+
+    /**
+     * 注册码
+     */
+    @SerializedName("register_code")
+    private String registerCode;
+
+    /**
+     * 推广包ID
+     */
+    @SerializedName("template_id")
+    private String templateId;
+
+    /**
+     * 仅当获取注册码指定该字段时才返回
+     */
+    @SerializedName("state")
+    private String state;
+
   }
 
   /**
@@ -313,6 +368,12 @@ public class WxCpTpPermanentCodeInfo extends WxCpBaseResp {
 
   }
 
+  /**
+   * From json wx cp tp permanent code info.
+   *
+   * @param json the json
+   * @return the wx cp tp permanent code info
+   */
   public static WxCpTpPermanentCodeInfo fromJson(String json) {
     return WxCpGsonBuilder.create().fromJson(json, WxCpTpPermanentCodeInfo.class);
   }

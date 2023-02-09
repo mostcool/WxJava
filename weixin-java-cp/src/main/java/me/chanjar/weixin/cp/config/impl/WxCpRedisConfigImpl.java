@@ -40,6 +40,7 @@ public class WxCpRedisConfigImpl implements WxCpConfigStorage {
   private volatile String token;
   private volatile String aesKey;
   private volatile Integer agentId;
+  private volatile String msgAuditPriKey;
   private volatile String msgAuditLibPath;
   private volatile String oauth2redirectUri;
   private volatile String httpProxyHost;
@@ -103,7 +104,8 @@ public class WxCpRedisConfigImpl implements WxCpConfigStorage {
    * @param password   the password
    * @param database   the database
    */
-  public WxCpRedisConfigImpl(JedisPoolConfig poolConfig, String host, int port, int timeout, String password, int database) {
+  public WxCpRedisConfigImpl(JedisPoolConfig poolConfig, String host, int port, int timeout, String password,
+                             int database) {
     jedisPool = new JedisPool(poolConfig, host, port, timeout, password, database);
   }
 
@@ -322,6 +324,11 @@ public class WxCpRedisConfigImpl implements WxCpConfigStorage {
   }
 
   @Override
+  public String getMsgAuditPriKey() {
+    return this.msgAuditPriKey;
+  }
+
+  @Override
   public String getMsgAuditLibPath() {
     return this.msgAuditLibPath;
   }
@@ -459,4 +466,8 @@ public class WxCpRedisConfigImpl implements WxCpConfigStorage {
     return this.getWebhookKey();
   }
 
+  @Override
+  public String getMsgAuditSecret() {
+    return null;
+  }
 }

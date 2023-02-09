@@ -19,8 +19,7 @@ import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.Kf.*;
 /**
  * 微信客服接口-服务实现
  *
- * @author Fu
- * @date 2022/1/19 19:41
+ * @author Fu  created on  2022/1/19 19:41
  */
 @RequiredArgsConstructor
 public class WxCpKfServiceImpl implements WxCpKfService {
@@ -49,9 +48,16 @@ public class WxCpKfServiceImpl implements WxCpKfService {
   }
 
   @Override
-  public WxCpKfAccountListResp listAccount() throws WxErrorException {
+  public WxCpKfAccountListResp listAccount(Integer offset, Integer limit) throws WxErrorException {
     String url = cpService.getWxCpConfigStorage().getApiUrl(ACCOUNT_LIST);
-    String responseContent = cpService.post(url, "{}");
+    JsonObject json = new JsonObject();
+    if (offset != null) {
+      json.addProperty("offset", offset);
+    }
+    if (limit != null) {
+      json.addProperty("limit", limit);
+    }
+    String responseContent = cpService.post(url, json.toString());
     return WxCpKfAccountListResp.fromJson(responseContent);
   }
 
@@ -107,7 +113,7 @@ public class WxCpKfServiceImpl implements WxCpKfService {
 
   @Override
   public WxCpKfServiceStateTransResp transServiceState(String openKfid, String externalUserId,
-    Integer serviceState, String servicerUserId) throws WxErrorException {
+                                                       Integer serviceState, String servicerUserId) throws WxErrorException {
     String url = cpService.getWxCpConfigStorage().getApiUrl(SERVICE_STATE_TRANS);
 
     JsonObject json = new JsonObject();
@@ -126,16 +132,16 @@ public class WxCpKfServiceImpl implements WxCpKfService {
     String url = cpService.getWxCpConfigStorage().getApiUrl(SYNC_MSG);
 
     JsonObject json = new JsonObject();
-    if (cursor!=null) {
+    if (cursor != null) {
       json.addProperty("cursor", cursor);
     }
-    if (token!=null) {
+    if (token != null) {
       json.addProperty("token", token);
     }
-    if (limit!=null) {
+    if (limit != null) {
       json.addProperty("limit", limit);
     }
-    if (voiceFormat!=null) {
+    if (voiceFormat != null) {
       json.addProperty("voice_format", voiceFormat);
     }
 
@@ -173,6 +179,64 @@ public class WxCpKfServiceImpl implements WxCpKfService {
     json.add("external_userid_list", array);
     String responseContent = cpService.post(url, json.toString());
     return WxCpKfCustomerBatchGetResp.fromJson(responseContent);
+  }
+
+  @Override
+  public WxCpKfServiceUpgradeConfigResp getUpgradeServiceConfig() throws WxErrorException {
+    String url = cpService.getWxCpConfigStorage().getApiUrl(CUSTOMER_GET_UPGRADE_SERVICE_CONFIG);
+
+    String response = cpService.get(url, null);
+    return WxCpKfServiceUpgradeConfigResp.fromJson(response);
+  }
+
+  @Override
+  public WxCpBaseResp upgradeMemberService(String openKfid, String externalUserId,
+                                           String userid, String wording) throws WxErrorException {
+    String url = cpService.getWxCpConfigStorage().getApiUrl(CUSTOMER_UPGRADE_SERVICE);
+
+    JsonObject json = new JsonObject();
+    json.addProperty("open_kfid", openKfid);
+    json.addProperty("external_userid", externalUserId);
+    json.addProperty("type", 1);
+
+    JsonObject memberJson = new JsonObject();
+    memberJson.addProperty("userid", userid);
+    memberJson.addProperty("wording", wording);
+    json.add("member", memberJson);
+
+    String response = cpService.post(url, json);
+    return WxCpBaseResp.fromJson(response);
+  }
+
+  @Override
+  public WxCpBaseResp upgradeGroupchatService(String openKfid, String externalUserId,
+                                              String chatId, String wording) throws WxErrorException {
+    String url = cpService.getWxCpConfigStorage().getApiUrl(CUSTOMER_UPGRADE_SERVICE);
+
+    JsonObject json = new JsonObject();
+    json.addProperty("open_kfid", openKfid);
+    json.addProperty("external_userid", externalUserId);
+    json.addProperty("type", 2);
+
+    JsonObject groupchatJson = new JsonObject();
+    groupchatJson.addProperty("chat_id", chatId);
+    groupchatJson.addProperty("wording", wording);
+    json.add("groupchat", groupchatJson);
+
+    String response = cpService.post(url, json);
+    return WxCpBaseResp.fromJson(response);
+  }
+
+  @Override
+  public WxCpBaseResp cancelUpgradeService(String openKfid, String externalUserId)
+    throws WxErrorException {
+    String url = cpService.getWxCpConfigStorage().getApiUrl(CUSTOMER_CANCEL_UPGRADE_SERVICE);
+
+    JsonObject json = new JsonObject();
+    json.addProperty("open_kfid", openKfid);
+    json.addProperty("external_userid", externalUserId);
+    String response = cpService.post(url, json);
+    return WxCpBaseResp.fromJson(response);
   }
 
   @Override

@@ -21,14 +21,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.chanjar.weixin.cp.constant.WxCpApiPathConsts.MsgAudit.*;
 
 /**
  * 会话内容存档接口实现类.
  *
- * @author Wang_Wong
- * @date 2022-01-17
+ * @author Wang_Wong  created on  2022-01-17
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +36,8 @@ public class WxCpMsgAuditServiceImpl implements WxCpMsgAuditService {
   private final WxCpService cpService;
 
   @Override
-  public WxCpChatDatas getChatDatas(long seq, @NonNull long limit, String proxy, String passwd, @NonNull long timeout) throws Exception {
+  public WxCpChatDatas getChatDatas(long seq, @NonNull long limit, String proxy, String passwd,
+                                    @NonNull long timeout) throws Exception {
     String configPath = cpService.getWxCpConfigStorage().getMsgAuditLibPath();
     if (StringUtils.isEmpty(configPath)) {
       throw new WxErrorException("请配置会话存档sdk文件的路径，不要配错了！！");
@@ -45,7 +46,8 @@ public class WxCpMsgAuditServiceImpl implements WxCpMsgAuditService {
     /**
      * 完整的文件库路径：
      *
-     * /www/osfile/libcrypto-1_1-x64.dll,libssl-1_1-x64.dll,libcurl-x64.dll,WeWorkFinanceSdk.dll,libWeWorkFinanceSdk_Java.so
+     * /www/osfile/libcrypto-1_1-x64.dll,libssl-1_1-x64.dll,libcurl-x64.dll,WeWorkFinanceSdk.dll,
+     * libWeWorkFinanceSdk_Java.so
      */
     // 替换斜杠
     String replacePath = configPath.replace("\\", "/");
@@ -76,11 +78,15 @@ public class WxCpMsgAuditServiceImpl implements WxCpMsgAuditService {
     osLib.addAll(fileLib);
 
     Finance.loadingLibraries(osLib, prefixPath);
-    long sdk = Finance.SingletonSDK();
-
-    long ret = Finance.Init(sdk, cpService.getWxCpConfigStorage().getCorpId(), cpService.getWxCpConfigStorage().getCorpSecret());
+    long sdk = Finance.NewSdk();
+    //因为会话存档单独有个secret,优先使用会话存档的secret
+    String msgAuditSecret = cpService.getWxCpConfigStorage().getMsgAuditSecret();
+    if (StringUtils.isEmpty(msgAuditSecret)) {
+      msgAuditSecret = cpService.getWxCpConfigStorage().getCorpSecret();
+    }
+    long ret = Finance.Init(sdk, cpService.getWxCpConfigStorage().getCorpId(), msgAuditSecret);
     if (ret != 0) {
-      Finance.DestroySingletonSDK(sdk);
+      Finance.DestroySdk(sdk);
       throw new WxErrorException("init sdk err ret " + ret);
     }
 
@@ -88,7 +94,7 @@ public class WxCpMsgAuditServiceImpl implements WxCpMsgAuditService {
     ret = Finance.GetChatData(sdk, seq, limit, proxy, passwd, timeout, slice);
     if (ret != 0) {
       Finance.FreeSlice(slice);
-      Finance.DestroySingletonSDK(sdk);
+      Finance.DestroySdk(sdk);
       throw new WxErrorException("getchatdata err ret " + ret);
     }
 
@@ -97,80 +103,124 @@ public class WxCpMsgAuditServiceImpl implements WxCpMsgAuditService {
     Finance.FreeSlice(slice);
     WxCpChatDatas chatDatas = WxCpChatDatas.fromJson(content);
     if (chatDatas.getErrCode().intValue() != 0) {
+      Finance.DestroySdk(sdk);
       throw new WxErrorException(chatDatas.toJson());
     }
 
+    chatDatas.setSdk(sdk);
     return chatDatas;
   }
 
   @Override
-  public WxCpChatModel getDecryptData(@NonNull WxCpChatDatas.WxCpChatData chatData) throws Exception {
-    String plainText = this.decryptChatData(chatData);
+  public WxCpChatModel getDecryptData(@NonNull long sdk, @NonNull WxCpChatDatas.WxCpChatData chatData,
+                                      @NonNull Integer pkcs1) throws Exception {
+    String plainText = this.decryptChatData(sdk, chatData, pkcs1);
     return WxCpChatModel.fromJson(plainText);
   }
 
-  public String decryptChatData(WxCpChatDatas.WxCpChatData chatData) throws Exception {
-    // 企业获取的会话内容将用公钥加密，企业可用自行保存的私钥解开会话内容数据，aeskey不能为空
-    String priKey = cpService.getWxCpConfigStorage().getAesKey();
+  /**
+   * Decrypt chat data string.
+   *
+   * @param sdk      the sdk
+   * @param chatData the chat data
+   * @param pkcs1    the pkcs 1
+   * @return the string
+   * @throws Exception the exception
+   */
+  public String decryptChatData(long sdk, WxCpChatDatas.WxCpChatData chatData, Integer pkcs1) throws Exception {
+    /**
+     * 企业获取的会话内容，使用企业自行配置的消息加密公钥进行加密，企业可用自行保存的私钥解开会话内容数据。
+     * msgAuditPriKey 会话存档私钥不能为空
+     */
+    String priKey = cpService.getWxCpConfigStorage().getMsgAuditPriKey();
     if (StringUtils.isEmpty(priKey)) {
-      throw new WxErrorException("请配置会话存档私钥【aesKey】");
+      throw new WxErrorException("请配置会话存档私钥【msgAuditPriKey】");
     }
 
-    String decryptByPriKey = WxCpCryptUtil.decryptByPriKey(chatData.getEncryptRandomKey(), priKey);
-    // 每次使用DecryptData解密会话存档前需要调用NewSlice获取一个slice，在使用完slice中数据后，还需要调用FreeSlice释放。
-    long sdk = Finance.SingletonSDK();
+    String decryptByPriKey = WxCpCryptUtil.decryptPriKey(chatData.getEncryptRandomKey(), priKey, pkcs1);
+    /**
+     * 每次使用DecryptData解密会话存档前需要调用NewSlice获取一个slice，在使用完slice中数据后，还需要调用FreeSlice释放。
+     */
     long msg = Finance.NewSlice();
 
+    /**
+     * 解密会话存档内容
+     * sdk不会要求用户传入rsa私钥，保证用户会话存档数据只有自己能够解密。
+     * 此处需要用户先用rsa私钥解密encrypt_random_key后，作为encrypt_key参数传入sdk来解密encrypt_chat_msg获取会话存档明文。
+     */
     int ret = Finance.DecryptData(sdk, decryptByPriKey, chatData.getEncryptChatMsg(), msg);
     if (ret != 0) {
       Finance.FreeSlice(msg);
-      Finance.DestroySingletonSDK(sdk);
+      Finance.DestroySdk(sdk);
       throw new WxErrorException("msg err ret " + ret);
     }
 
-    // 明文
+    /**
+     * 明文
+     */
     String plainText = Finance.GetContentFromSlice(msg);
     Finance.FreeSlice(msg);
     return plainText;
   }
 
   @Override
-  public String getChatPlainText(WxCpChatDatas.@NonNull WxCpChatData chatData) throws Exception {
-    return this.decryptChatData(chatData);
+  public String getChatPlainText(@NonNull long sdk, WxCpChatDatas.@NonNull WxCpChatData chatData,
+                                 @NonNull Integer pkcs1) throws Exception {
+    return this.decryptChatData(sdk, chatData, pkcs1);
   }
 
   @Override
-  public void getMediaFile(@NonNull String sdkfileid, String proxy, String passwd, @NonNull long timeout, @NonNull String targetFilePath) throws WxErrorException {
+  public void getMediaFile(@NonNull long sdk, @NonNull String sdkfileid, String proxy, String passwd,
+                           @NonNull long timeout, @NonNull String targetFilePath) throws WxErrorException {
     /**
      * 1、媒体文件每次拉取的最大size为512k，因此超过512k的文件需要分片拉取。
      * 2、若该文件未拉取完整，sdk的IsMediaDataFinish接口会返回0，同时通过GetOutIndexBuf接口返回下次拉取需要传入GetMediaData的indexbuf。
-     * 3、indexbuf一般格式如右侧所示，”Range:bytes=524288-1048575“:表示这次拉取的是从524288到1048575的分片。单个文件首次拉取填写的indexbuf为空字符串，拉取后续分片时直接填入上次返回的indexbuf即可。
+     * 3、indexbuf一般格式如右侧所示，”Range:bytes=524288-1048575“:表示这次拉取的是从524288到1048575的分片。单个文件首次拉取填写的indexbuf
+     * 为空字符串，拉取后续分片时直接填入上次返回的indexbuf即可。
      */
     File targetFile = new File(targetFilePath);
     if (!targetFile.getParentFile().exists()) {
       targetFile.getParentFile().mkdirs();
     }
+    this.getMediaFile(sdk, sdkfileid, proxy, passwd, timeout, i -> {
+      try {
+        // 大于512k的文件会分片拉取，此处需要使用追加写，避免后面的分片覆盖之前的数据。
+        FileOutputStream outputStream = new FileOutputStream(targetFile, true);
+        outputStream.write(i);
+        outputStream.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    });
+  }
 
+  @Override
+  public void getMediaFile(@NonNull long sdk, @NonNull String sdkfileid, String proxy, String passwd, @NonNull long timeout, @NonNull Consumer<byte[]> action) throws WxErrorException {
+/**
+ * 1、媒体文件每次拉取的最大size为512k，因此超过512k的文件需要分片拉取。
+ * 2、若该文件未拉取完整，sdk的IsMediaDataFinish接口会返回0，同时通过GetOutIndexBuf接口返回下次拉取需要传入GetMediaData的indexbuf。
+ * 3、indexbuf一般格式如右侧所示，”Range:bytes=524288-1048575“:表示这次拉取的是从524288到1048575的分片。单个文件首次拉取填写的indexbuf
+ * 为空字符串，拉取后续分片时直接填入上次返回的indexbuf即可。
+ */
     String indexbuf = "";
     int ret, data_len = 0;
+    log.debug("正在分片拉取媒体文件 sdkFileId为{}", sdkfileid);
     while (true) {
       long mediaData = Finance.NewMediaData();
-      long sdk = Finance.SingletonSDK();
       ret = Finance.GetMediaData(sdk, indexbuf, sdkfileid, proxy, passwd, timeout, mediaData);
       if (ret != 0) {
         Finance.FreeMediaData(mediaData);
-        Finance.DestroySingletonSDK(sdk);
+        Finance.DestroySdk(sdk);
         throw new WxErrorException("getmediadata err ret " + ret);
       }
 
       data_len += Finance.GetDataLen(mediaData);
-      log.info("正在分片拉取媒体文件 len:{}, data_len:{}, is_finis:{} \n", Finance.GetIndexLen(mediaData), data_len, Finance.IsMediaDataFinish(mediaData));
+      log.info("正在分片拉取媒体文件 len:{}, data_len:{}, is_finis:{} \n", Finance.GetIndexLen(mediaData), data_len,
+        Finance.IsMediaDataFinish(mediaData));
 
       try {
         // 大于512k的文件会分片拉取，此处需要使用追加写，避免后面的分片覆盖之前的数据。
-        FileOutputStream outputStream = new FileOutputStream(new File(targetFilePath), true);
-        outputStream.write(Finance.GetData(mediaData));
-        outputStream.close();
+        action.accept(Finance.GetData(mediaData));
       } catch (Exception e) {
         e.printStackTrace();
       }
