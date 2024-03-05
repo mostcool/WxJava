@@ -75,9 +75,6 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   private final ProfitSharingService profitSharingService = new ProfitSharingServiceImpl(this);
 
   @Getter
-  private final ProfitSharingV3Service profitSharingV3Service = new ProfitSharingV3ServiceImpl(this);
-
-  @Getter
   private final RedpackService redpackService = new RedpackServiceImpl(this);
 
   @Getter
@@ -121,6 +118,9 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
 
   @Getter
   private final PartnerPayScoreService partnerPayScoreService = new PartnerPayScoreServiceImpl(this);
+
+  @Getter
+  private final PartnerPayScoreSignPlanService partnerPayScoreSignPlanService=new PartnerPayScoreSignPlanServiceImpl(this);
 
   @Getter
   private final MerchantTransferService merchantTransferService = new MerchantTransferServiceImpl(this);
@@ -840,7 +840,7 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   }
 
   @Override
-  public byte[] createScanPayQrcodeMode1(String productId, File logoFile, Integer sideLength) {
+  public byte[] createScanPayQrcodeMode1(String productId, File logoFile, Integer sideLength) throws Exception {
     String content = this.createScanPayQrcodeMode1(productId);
     return this.createQrcode(content, logoFile, sideLength);
   }
@@ -870,11 +870,11 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   }
 
   @Override
-  public byte[] createScanPayQrcodeMode2(String codeUrl, File logoFile, Integer sideLength) {
+  public byte[] createScanPayQrcodeMode2(String codeUrl, File logoFile, Integer sideLength) throws Exception {
     return this.createQrcode(codeUrl, logoFile, sideLength);
   }
 
-  private byte[] createQrcode(String content, File logoFile, Integer sideLength) {
+  private byte[] createQrcode(String content, File logoFile, Integer sideLength) throws Exception {
     if (sideLength == null || sideLength < 1) {
       return QrcodeUtils.createQrcode(content, logoFile);
     }
@@ -971,7 +971,6 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
 
   @Override
   public WxPayFundFlowResult downloadFundFlow(String billDate, String accountType, String tarType) throws WxPayException {
-
     WxPayDownloadFundFlowRequest request = new WxPayDownloadFundFlowRequest();
     request.setBillDate(billDate);
     request.setAccountType(accountType);

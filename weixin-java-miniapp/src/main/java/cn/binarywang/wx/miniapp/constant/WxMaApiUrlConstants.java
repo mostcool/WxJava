@@ -344,16 +344,25 @@ public class WxMaApiUrlConstants {
 
   public interface Link {
     String GENERATE_URLLINK_URL = "https://api.weixin.qq.com/wxa/generate_urllink";
+    String QUERY_URLLINK_URL = "https://api.weixin.qq.com/wxa/query_urllink";
   }
 
   public interface ShortLink {
     String GENERATE_SHORT_LINK_URL = "https://api.weixin.qq.com/wxa/genwxashortlink";
   }
 
+  /**
+   * 小程序安全
+   */
   public interface SecCheck {
     String IMG_SEC_CHECK_URL = "https://api.weixin.qq.com/wxa/img_sec_check";
     String MSG_SEC_CHECK_URL = "https://api.weixin.qq.com/wxa/msg_sec_check";
     String MEDIA_CHECK_ASYNC_URL = "https://api.weixin.qq.com/wxa/media_check_async";
+
+    /**
+     * 获取用户安全等级
+     */
+    String GET_USER_RISK_RANK = "https://api.weixin.qq.com/wxa/getuserriskrank";
   }
 
   public interface Setting {
@@ -752,17 +761,6 @@ public class WxMaApiUrlConstants {
 
     }
 
-
-    /**
-     * 安全风控
-     */
-    interface SafetyRiskControl {
-      /**
-       * 获取用户的安全等级，无需用户授权
-       */
-      String GET_USER_RISK_RANK = "https://api.weixin.qq.com/wxa/getuserriskrank";
-    }
-
   }
 
   /**
@@ -830,4 +828,60 @@ public class WxMaApiUrlConstants {
     String SET_MSG_JUMP_PATH = "https://api.weixin.qq.com/wxa/sec/order/set_msg_jump_path";
 
   }
+
+  public interface Vod {
+    String LIST_MEDIA_URL = "https://api.weixin.qq.com/wxa/sec/vod/listmedia";
+    String GET_MEDIA_URL = "https://api.weixin.qq.com/wxa/sec/vod/getmedia";
+    String GET_MEDIA_LINK_URL = "https://api.weixin.qq.com/wxa/sec/vod/getmedialink";
+    String DELETE_MEDIA_URL = "https://api.weixin.qq.com/wxa/sec/vod/deletemedia";
+    String AUDIT_DRAMA_URL = "https://api.weixin.qq.com/wxa/sec/vod/auditdrama";
+    String LIST_DRAMAS_URL = "https://api.weixin.qq.com/wxa/sec/vod/listdramas";
+    String GET_DRAMA_URL = "https://api.weixin.qq.com/wxa/sec/vod/getdrama";
+    String SINGLE_FILE_UPLOAD_URL = "https://api.weixin.qq.com/wxa/sec/vod/singlefileupload";
+    String PULL_UPLOAD_URL = "https://api.weixin.qq.com/wxa/sec/vod/pullupload";
+    String GET_TASK_URL = "https://api.weixin.qq.com/wxa/sec/vod/gettask";
+    String APPLY_UPLOAD_URL = "https://api.weixin.qq.com/wxa/sec/vod/applyupload";
+    String UPLOAD_PART_URL = "https://api.weixin.qq.com/wxa/sec/vod/uploadpart";
+    String COMMIT_UPLOAD_URL = "https://api.weixin.qq.com/wxa/sec/vod/commitupload";
+    String GET_CDN_USAGE_DATA_URL = "https://api.weixin.qq.com/wxa/sec/vod/getcdnusagedata";
+    String GET_CDN_LOGS_URL = "https://api.weixin.qq.com/wxa/sec/vod/getcdnlogs";
+
+  }
+  /**
+   * 小程序虚拟支付服务相关接口
+   * <pre>
+   * 文档地址： https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/industry/virtual-payment.html#_2-3-%E6%9C%8D%E5%8A%A1%E5%99%A8API
+   * </pre>
+   */
+  public interface XPay {
+    String QUERY_USER_BALANCE_URL = "https://api.weixin.qq.com/xpay/query_user_balance?pay_sig=%s&signature=%s";
+    String CURRENCY_PAY_URL = "https://api.weixin.qq.com/xpay/currency_pay?pay_sig=%s&signature=%s";
+    String QUERY_ORDER_URL = "https://api.weixin.qq.com/xpay/query_order?pay_sig=%s";
+    String CANCEL_CURRENCY_PAY_URL = "https://api.weixin.qq.com/xpay/cancel_currency_pay?pay_sig=%s&signature=%s";
+    String NOTIFY_PROVIDE_GOODS_URL = "https://api.weixin.qq.com/xpay/notify_provide_goods?pay_sig=%s";
+    String PRESENT_CURRENCY_URL = "https://api.weixin.qq.com/xpay/present_currency?pay_sig=%s";
+    String DOWNLOAD_BILL_URL = "https://api.weixin.qq.com/xpay/download_bill?pay_sig=%s";
+    String REFUND_ORDER_URL = "https://api.weixin.qq.com/xpay/refund_order?pay_sig=%s";
+    String CREATE_WITHDRAW_ORDER_URL = "https://api.weixin.qq.com/xpay/create_withdraw_order?pay_sig=%s";
+    String QUERY_WITHDRAW_ORDER_URL = "https://api.weixin.qq.com/xpay/query_withdraw_order?pay_sig=%s";
+    String START_UPLOAD_GOODS_URL = "https://api.weixin.qq.com/xpay/start_upload_goods?pay_sig=%s";
+    String QUERY_UPLOAD_GOODS_URL = "https://api.weixin.qq.com/xpay/query_upload_goods?pay_sig=%s";
+    String START_PUBLISH_GOODS_URL = "https://api.weixin.qq.com/xpay/start_publish_goods?pay_sig=%s";
+    String QUERY_PUBLISH_GOODS_URL = "https://api.weixin.qq.com/xpay/query_publish_goods?pay_sig=%s";
+
+  }
+
+  /**
+   * 退货组件
+   * <pre>
+   * 文档地址：https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/industry/express/business/express_sale_return.html
+   * </pre>
+   *
+   */
+  public interface ExpressDeliveryReturn{
+    String ADD_DELIVERY_RETURN_URL = "https://api.weixin.qq.com/cgi-bin/express/delivery/return/add";
+    String GET_DELIVERY_RETURN_URL = "https://api.weixin.qq.com/cgi-bin/express/delivery/return/get";
+    String UNBIND_DELIVERY_RETURN_URL = "https://api.weixin.qq.com/cgi-bin/express/delivery/return/unbind";
+  }
+
 }

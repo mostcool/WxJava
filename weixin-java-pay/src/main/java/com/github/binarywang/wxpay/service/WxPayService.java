@@ -11,6 +11,7 @@ import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
+
 import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
@@ -240,19 +241,12 @@ public interface WxPayService {
   /**
    * 获取分账服务类.
    * <p>
-   * V3接口 {@link WxPayService#getProfitSharingV3Service()}
+   * V3接口 {@link WxPayService#getProfitSharingService()}
    * </p>
    *
    * @return the ent pay service
    */
   ProfitSharingService getProfitSharingService();
-
-  /**
-   * 获取V3分账服务类.
-   *
-   * @return the ent pay service
-   */
-  ProfitSharingV3Service getProfitSharingV3Service();
 
   /**
    * 获取支付分服务类.
@@ -1032,7 +1026,7 @@ public interface WxPayService {
    * @param sideLength 要生成的二维码的边长，如果为空，则取默认值400
    * @return 生成的二维码的字节数组 byte [ ]
    */
-  byte[] createScanPayQrcodeMode1(String productId, File logoFile, Integer sideLength);
+  byte[] createScanPayQrcodeMode1(String productId, File logoFile, Integer sideLength) throws Exception;
 
   /**
    * <pre>
@@ -1061,7 +1055,7 @@ public interface WxPayService {
    * @param sideLength 要生成的二维码的边长，如果为空，则取默认值400
    * @return 生成的二维码的字节数组 byte [ ]
    */
-  byte[] createScanPayQrcodeMode2(String codeUrl, File logoFile, Integer sideLength);
+  byte[] createScanPayQrcodeMode2(String codeUrl, File logoFile, Integer sideLength) throws Exception;
 
   /**
    * <pre>
@@ -1536,4 +1530,9 @@ public interface WxPayService {
    */
   PartnerPayScoreService getPartnerPayScoreService();
 
+  /**
+   * 获取服务商直股份签约计划服务类
+   * @return  the partner pay score sign plan service
+   */
+  PartnerPayScoreSignPlanService getPartnerPayScoreSignPlanService();
 }
