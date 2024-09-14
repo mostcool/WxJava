@@ -8,6 +8,8 @@ import me.chanjar.weixin.cp.bean.external.acquisition.*;
 import me.chanjar.weixin.cp.bean.external.contact.*;
 import me.chanjar.weixin.cp.bean.external.interceptrule.WxCpInterceptRule;
 import me.chanjar.weixin.cp.bean.external.interceptrule.WxCpInterceptRuleAddRequest;
+import me.chanjar.weixin.cp.bean.external.interceptrule.WxCpInterceptRuleInfo;
+import me.chanjar.weixin.cp.bean.external.interceptrule.WxCpInterceptRuleList;
 
 import java.io.File;
 import java.io.IOException;
@@ -845,6 +847,20 @@ public interface WxCpExternalContactService {
    */
   WxCpGetMomentTaskResult getMomentTaskResult(String jobId) throws WxErrorException;
 
+
+  /**
+   * <pre>
+   *   停止发表企业朋友圈。
+   *   <a href="https://developer.work.weixin.qq.com/document/path/97612">文档地址</a>
+   * </pre>
+   *
+   * @param momentId 朋友圈id，可通过<a href="https://developer.work.weixin.qq.com/document/path/97612#25254/%E8%8E%B7%E5%8F%96%E5%AE%A2%E6%88%B7%E6%9C%8B%E5%8F%8B%E5%9C%88%E4%BC%81%E4%B8%9A%E5%8F%91%E8%A1%A8%E7%9A%84%E5%88%97%E8%A1%A8">获取客户朋友圈企业发表的列表</a>接口获取朋友圈企业发表的列表
+   * @return wx cp add moment result
+   * @throws WxErrorException the wx error exception
+   */
+  WxCpBaseResp cancelMomentTask(String momentId) throws WxErrorException;
+
+
   /**
    * <pre>
    * 获取客户朋友圈全部的发表记录 获取企业全部的发表列表
@@ -1133,6 +1149,31 @@ public interface WxCpExternalContactService {
    * @throws WxErrorException the wx error exception
    */
   void delInterceptRule(String ruleId) throws WxErrorException;
+
+  /**
+   * 获取敏感词规则列表
+   *
+   * 企业和第三方应用可以通过此接口获取所有设置的敏感词规则列表。
+   * 请求方式：GET(HTTPS)
+   * 文档地址：<a href="https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get_intercept_rule_list">获取敏感词规则列表</a>
+   *
+   * @return WxCpInterceptRuleList 敏感词规则列表
+   * @throws WxErrorException 微信API异常
+   */
+  WxCpInterceptRuleList getInterceptRuleList() throws WxErrorException;
+
+  /**
+   * 获取敏感词详情
+   *
+   * 企业和第三方应用可以通过此接口获取单个敏感词规则的详细信息。
+   * 请求方式：GET(HTTPS)
+   * 文档地址：<a href="https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get_intercept_rule">获取敏感词详情</a>
+   *
+   * @param ruleId 敏感词规则ID
+   * @return WxCpInterceptRuleInfo 敏感词规则详情
+   * @throws WxErrorException 微信API异常
+   */
+  WxCpInterceptRuleInfo getInterceptRuleDetail(String ruleId) throws WxErrorException;
 
   /**
    * <pre>

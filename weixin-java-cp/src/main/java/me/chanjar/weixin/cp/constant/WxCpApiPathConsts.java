@@ -28,6 +28,10 @@ public interface WxCpApiPathConsts {
    */
   String GET_CALLBACK_IP = "/cgi-bin/getcallbackip";
   /**
+   * The constant GET_API_DOMAIN_IP.
+   */
+  String GET_API_DOMAIN_IP = "/cgi-bin/get_api_domain_ip";
+  /**
    * The constant BATCH_REPLACE_PARTY.
    */
   String BATCH_REPLACE_PARTY = "/cgi-bin/batch/replaceparty";
@@ -1233,6 +1237,12 @@ public interface WxCpApiPathConsts {
      * The constant GET_MOMENT_TASK_RESULT.
      */
     String GET_MOMENT_TASK_RESULT = "/cgi-bin/externalcontact/get_moment_task_result";
+
+    /**
+     * 停止发表企业朋友圈
+     */
+    String CANCEL_MOMENT_TASK = "/cgi-bin/externalcontact/cancel_moment_task";
+
     /**
      * The constant GET_MOMENT_LIST.
      */
@@ -1344,6 +1354,14 @@ public interface WxCpApiPathConsts {
      * The constant DEL_INTERCEPT_RULE.
      */
     String DEL_INTERCEPT_RULE = "/cgi-bin/externalcontact/del_intercept_rule";
+    /**
+     * 获取敏感词规则列表
+     */
+    String GET_INTERCEPT_RULE_LIST = "/cgi-bin/externalcontact/get_intercept_rule_list";
+    /**
+     * 获取敏感词规则详情
+     */
+    String GET_INTERCEPT_RULE = "/cgi-bin/externalcontact/get_intercept_rule";
     /**
      * 获取当前仍然有效的获客链接
      */
