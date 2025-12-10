@@ -92,7 +92,7 @@ public class WxCpXmlMessage implements Serializable {
   private String content;
 
   @XStreamAlias("MsgId")
-  private Long msgId;
+  private String msgId;
 
   @XStreamAlias("PicUrl")
   @XStreamConverter(value = XStreamCDataConverter.class)
@@ -155,6 +155,18 @@ public class WxCpXmlMessage implements Serializable {
   @XStreamConverter(value = XStreamCDataConverter.class)
   private String memChangeCnt;
 
+  @XStreamAlias("MemChangeList")
+  @XStreamConverter(value = XStreamCDataConverter.class)
+  private String MemChangeList;
+
+  @XStreamAlias("LastMemVer")
+  @XStreamConverter(value = XStreamCDataConverter.class)
+  private String lastMemVer;
+
+  @XStreamAlias("CurMemVer")
+  @XStreamConverter(value = XStreamCDataConverter.class)
+  private String curMemVer;
+
   @XStreamAlias("Source")
   @XStreamConverter(value = XStreamCDataConverter.class)
   private String source;
@@ -197,6 +209,13 @@ public class WxCpXmlMessage implements Serializable {
 
   @XStreamAlias("SelectedItems")
   private List<SelectedItem> selectedItems;
+
+  /**
+   * <a href="https://developer.work.weixin.qq.com/document/path/96488#%E5%9B%9E%E8%B0%83%E5%BC%82%E6%AD%A5%E4%BB%BB%E5%8A%A1%E7%BB%93%E6%9E%9C">异步任务id</a>
+   */
+  @XStreamAlias("JobId")
+  @XStreamConverter(value = XStreamCDataConverter.class)
+  private String jobId;
 
   /**
    * 微信客服

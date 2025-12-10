@@ -238,6 +238,12 @@ public interface WxCpApiPathConsts {
      * The constant JSSDK_MEDIA_GET.
      */
     String JSSDK_MEDIA_GET = "/cgi-bin/media/get/jssdk";
+
+    /** The constant GET_UPLOAD_BY_URL_RESULT. */
+    String GET_UPLOAD_BY_URL_RESULT = "/cgi-bin/media/get_upload_by_url_result";
+
+    /** The constant UPLOAD_BY_URL. */
+    String UPLOAD_BY_URL = "/cgi-bin/media/upload_by_url";
   }
 
   /**
@@ -849,6 +855,10 @@ public interface WxCpApiPathConsts {
      * The constant GET_PERMANENT_CODE.
      */
     String GET_PERMANENT_CODE = "/cgi-bin/service/get_permanent_code";
+    /**
+     * The constant GET_V2_PERMANENT_CODE.
+     */
+    String GET_V2_PERMANENT_CODE = "/cgi-bin/service/v2/get_permanent_code";
     /**
      * The constant GET_SUITE_TOKEN.
      */
@@ -1620,5 +1630,41 @@ public interface WxCpApiPathConsts {
      * 将应用获取的外部用户临时idtmp_external_userid，转换为external_userid。
      */
     String CONVERT_TMP_EXTERNAL_USER_ID = "/cgi-bin/idconvert/convert_tmp_external_userid";
+  }
+
+  /**
+   * 智能机器人相关接口
+   * 官方文档: https://developer.work.weixin.qq.com/document/path/101039
+   */
+  interface IntelligentRobot {
+    /**
+     * 创建智能机器人
+     */
+    String CREATE_ROBOT = "/cgi-bin/intelligent_robot/create";
+    
+    /**
+     * 删除智能机器人
+     */
+    String DELETE_ROBOT = "/cgi-bin/intelligent_robot/delete";
+    
+    /**
+     * 更新智能机器人
+     */
+    String UPDATE_ROBOT = "/cgi-bin/intelligent_robot/update";
+    
+    /**
+     * 查询智能机器人
+     */
+    String GET_ROBOT = "/cgi-bin/intelligent_robot/get";
+    
+    /**
+     * 智能机器人会话
+     */
+    String CHAT = "/cgi-bin/intelligent_robot/chat";
+    
+    /**
+     * 重置智能机器人会话
+     */
+    String RESET_SESSION = "/cgi-bin/intelligent_robot/reset_session";
   }
 }

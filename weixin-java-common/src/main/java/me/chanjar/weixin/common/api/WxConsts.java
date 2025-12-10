@@ -302,6 +302,7 @@ public class WxConsts {
     public static final String VIEW = "VIEW";
     public static final String MASS_SEND_JOB_FINISH = "MASSSENDJOBFINISH";
 
+    public static final String SYS_APPROVAL_CHANGE = "sys_approval_change";
     /**
      * 扫码推事件的事件推送
      */
@@ -431,7 +432,7 @@ public class WxConsts {
      */
     public static final String WEAPP_AUDIT_FAIL = "weapp_audit_fail";
 
-    
+
     /**
      * 小程序审核事件：审核延后
      */
@@ -464,32 +465,40 @@ public class WxConsts {
     /**
      * 名称审核事件
      */
-    public static final String  WXA_NICKNAME_AUDIT = "wxa_nickname_audit" ;
+    public static final String WXA_NICKNAME_AUDIT = "wxa_nickname_audit";
     /**
-     *小程序违规记录事件
-    */
-    public static final String  WXA_ILLEGAL_RECORD= "wxa_illegal_record";
+     * 小程序违规记录事件
+     */
+    public static final String WXA_ILLEGAL_RECORD = "wxa_illegal_record";
     /**
-     *小程序申诉记录推送
-    */
-    public static final String  WXA_APPEAL_RECORD= "wxa_appeal_record";
+     * 小程序申诉记录推送
+     */
+    public static final String WXA_APPEAL_RECORD = "wxa_appeal_record";
     /**
      * 隐私权限审核结果推送
      */
-    public static final String  WXA_PRIVACY_APPLY= "wxa_privacy_apply";
+    public static final String WXA_PRIVACY_APPLY = "wxa_privacy_apply";
     /**
      * 类目审核结果事件推送
      */
-    public static final String  WXA_CATEGORY_AUDIT= "wxa_category_audit";
+    public static final String WXA_CATEGORY_AUDIT = "wxa_category_audit";
     /**
      * 小程序微信认证支付成功事件
      */
-    public static final String  WX_VERIFY_PAY_SUCC= "wx_verify_pay_succ";
+    public static final String WX_VERIFY_PAY_SUCC = "wx_verify_pay_succ";
     /**
      * 小程序微信认证派单事件
      */
-    public static final String  WX_VERIFY_DISPATCH= "wx_verify_dispatch";
-    }
+    public static final String WX_VERIFY_DISPATCH = "wx_verify_dispatch";
+    /**
+     * 提醒需要上传发货信息事件：曾经发过货的小程序，订单超过48小时未发货时
+     */
+    public static final String TRADE_MANAGE_REMIND_SHIPPING = "trade_manage_remind_shipping";
+    /**
+     * 订单完成发货时、订单结算时
+     */
+    public static final String TRADE_MANAGE_ORDER_SETTLEMENT = "trade_manage_order_settlement";
+  }
 
   /**
    * 上传多媒体（临时素材）文件的类型.
@@ -621,5 +630,20 @@ public class WxConsts {
      * 小程序appId类型
      */
     public static final String MINI_TYPE = "mini";
+  }
+
+  /**
+   * 新建文章类型
+   */
+  @UtilityClass
+  public static class ArticleType {
+    /**
+     * 图文消息
+     */
+    public static final String NEWS = "news";
+    /**
+     * 图片消息
+     */
+    public static final String NEWS_PIC = "newspic";
   }
 }

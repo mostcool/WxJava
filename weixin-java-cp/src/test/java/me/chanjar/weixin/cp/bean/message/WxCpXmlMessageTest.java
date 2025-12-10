@@ -6,6 +6,7 @@ import me.chanjar.weixin.cp.util.xml.XStreamTransformer;
 import org.testng.annotations.Test;
 
 import static me.chanjar.weixin.cp.constant.WxCpConsts.EventType.TASKCARD_CLICK;
+import static me.chanjar.weixin.cp.constant.WxCpConsts.EventType.UPLOAD_MEDIA_JOB_FINISH;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
@@ -71,7 +72,7 @@ public class WxCpXmlMessageTest {
     assertEquals(wxMessage.getCreateTime(), Long.valueOf(1348831860));
     assertEquals(wxMessage.getMsgType(), WxConsts.XmlMsgType.TEXT);
     assertEquals(wxMessage.getContent(), "this is a test");
-    assertEquals(wxMessage.getMsgId(), Long.valueOf(1234567890123456L));
+    assertEquals(wxMessage.getMsgId(), "1234567890123456");
     assertEquals(wxMessage.getPicUrl(), "this is a url");
     assertEquals(wxMessage.getMediaId(), "media_id");
     assertEquals(wxMessage.getFormat(), "Format");
@@ -420,5 +421,54 @@ public class WxCpXmlMessageTest {
     assertThat(wxCpXmlMessage.getApprovalInfo().getApprovalNodes().get(0).getItems()).isNotEmpty();
     assertThat(wxCpXmlMessage.getApprovalInfo().getApprovalNodes().get(0).getItems().get(0).getItemName()).isNotEmpty();
     assertThat(wxCpXmlMessage.getApprovalInfo().getNotifyNodes().get(0).getItemName()).isNotEmpty();
+  }
+
+  /**
+   * Test open approval change.
+   */
+  public void testUploadMediaJobFinishEvent() {
+    String xml = "<xml>\n" +
+      "\t<ToUserName><![CDATA[wx28dbb14e3720FAKE]]></ToUserName>\n" +
+      "\t<FromUserName><![CDATA[sys]]></FromUserName>\n" +
+      "\t<CreateTime>1425284517</CreateTime>\n" +
+      "\t<MsgType><![CDATA[event]]></MsgType>\n" +
+      "\t<Event><![CDATA[upload_media_job_finish]]></Event>\n" +
+      "\t<JobId><![CDATA[jobid_S0MrnndvRG5fadSlLwiBqiDDbM143UqTmKP3152FZk4]]></JobId>\n" +
+      "</xml>";
+
+    WxCpXmlMessage wxCpXmlMessage = WxCpXmlMessage.fromXml(xml);
+    assertThat(wxCpXmlMessage).isNotNull();
+    assertThat(wxCpXmlMessage.getJobId()).isNotEmpty();
+    assertThat(wxCpXmlMessage.getJobId()).isEqualTo("jobid_S0MrnndvRG5fadSlLwiBqiDDbM143UqTmKP3152FZk4");
+    assertThat(wxCpXmlMessage.getEvent()).isEqualTo(UPLOAD_MEDIA_JOB_FINISH);
+  }
+
+  /**
+   * Test both numeric and string msgId formats to ensure backward compatibility
+   */
+  public void testMsgIdStringAndNumericFormats() {
+    // Test with numeric msgId (old format)
+    String xmlWithNumeric = "<xml>"
+      + "<ToUserName><![CDATA[toUser]]></ToUserName>"
+      + "<FromUserName><![CDATA[fromUser]]></FromUserName>"
+      + "<CreateTime>1348831860</CreateTime>"
+      + "<MsgType><![CDATA[text]]></MsgType>"
+      + "<Content><![CDATA[this is a test]]></Content>"
+      + "<MsgId>1234567890123456</MsgId>"
+      + "</xml>";
+    WxCpXmlMessage wxMessageNumeric = WxCpXmlMessage.fromXml(xmlWithNumeric);
+    assertEquals(wxMessageNumeric.getMsgId(), "1234567890123456");
+
+    // Test with string msgId (new format - the actual issue case)
+    String xmlWithString = "<xml>"
+      + "<ToUserName><![CDATA[toUser]]></ToUserName>"
+      + "<FromUserName><![CDATA[fromUser]]></FromUserName>"
+      + "<CreateTime>1348831860</CreateTime>"
+      + "<MsgType><![CDATA[text]]></MsgType>"
+      + "<Content><![CDATA[this is a test]]></Content>"
+      + "<MsgId>CAIQg/PKxgYY2sC9tpuAgAMg9/zKaw==</MsgId>"
+      + "</xml>";
+    WxCpXmlMessage wxMessageString = WxCpXmlMessage.fromXml(xmlWithString);
+    assertEquals(wxMessageString.getMsgId(), "CAIQg/PKxgYY2sC9tpuAgAMg9/zKaw==");
   }
 }

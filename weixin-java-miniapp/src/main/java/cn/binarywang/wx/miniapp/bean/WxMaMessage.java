@@ -212,6 +212,107 @@ public class WxMaMessage implements Serializable {
   @XStreamAlias("SubscribeMsgSentEvent")
   private WxMaSubscribeMsgEvent.SubscribeMsgSentEvent subscribeMsgSentEvent;
 
+  // 小程序基本信息
+
+  //region 小程序基本信息 infoType=notify_3rd_wxa_auth_and_icp
+
+  /**
+   * 返回值
+   */
+  @XStreamAlias("ret")
+  private String ret;
+
+  /**
+   * 一级类目id
+   */
+  @XStreamAlias("first")
+  private String first;
+
+  /**
+   * 二级类目id
+   */
+  @XStreamAlias("second")
+  private String second;
+
+  /**
+   * 驳回原因
+   */
+  @XStreamAlias("reason")
+  private String reason;
+
+  /**
+   * 小程序代码审核驳回原因
+   */
+  @XStreamAlias("Reason")
+  private String weAppReason;
+
+  /**
+   * 昵称
+   */
+  @XStreamAlias("nickname")
+  private String nickname;
+
+  /**
+   * 原始通知内容
+   */
+  private String context;
+
+  /**
+   * 微信支付订单号
+   */
+  @XStreamAlias("transaction_id")
+  private String transactionId;
+  /**
+   * 商户号
+   */
+  @XStreamAlias("merchant_id")
+  private String merchantId;
+  /**
+   * 子商户号
+   */
+  @XStreamAlias("sub_merchant_id")
+  private String subMerchantId;
+  /**
+   * 商户订单号
+   */
+  @XStreamAlias("merchant_trade_no")
+  private String merchantTradeNo;
+  /**
+   * 支付成功时间，秒级时间戳
+   */
+  @XStreamAlias("pay_time")
+  private Long payTime;
+  /**
+   * 消息文本内容
+   */
+  @XStreamAlias("msg")
+  private String msg;
+  /**
+   * 发货时间，秒级时间戳
+   */
+  @XStreamAlias("shipped_time")
+  private Long shippedTime;
+  /**
+   * 预计结算时间，秒级时间戳。发货时推送才有该字段
+   */
+  @XStreamAlias("estimated_settlement_time")
+  private Long estimatedSettlementTime;
+  /**
+   * 确认收货方式：1. 手动确认收货；2. 自动确认收货。结算时推送才有该字段
+   */
+  @XStreamAlias("confirm_receive_method")
+  private Integer confirmReceiveMethod;
+  /**
+   * 确认收货时间，秒级时间戳。结算时推送才有该字段
+   */
+  @XStreamAlias("confirm_receive_time")
+  private Long confirmReceiveTime;
+  /**
+   * 订单结算时间，秒级时间戳。结算时推送才有该字段
+   */
+  @XStreamAlias("settlement_time")
+  private Long settlementTime;
+
   /**
    * 不要直接使用这个字段，
    * 这个字段只是为了适配 SubscribeMsgPopupEvent SubscribeMsgChangeEvent SubscribeMsgSentEvent
@@ -261,7 +362,9 @@ public class WxMaMessage implements Serializable {
                                              WxMaConfig wxMaConfig, String timestamp, String nonce,
                                              String msgSignature) {
     String plainText = new WxMaCryptUtils(wxMaConfig).decryptXml(msgSignature, timestamp, nonce, encryptedXml);
-    return fromXml(plainText);
+    WxMaMessage wxMaMessage = fromXml(plainText);
+    wxMaMessage.setContext(plainText);
+    return wxMaMessage;
   }
 
   public static WxMaMessage fromEncryptedXml(InputStream is, WxMaConfig wxMaConfig, String timestamp,

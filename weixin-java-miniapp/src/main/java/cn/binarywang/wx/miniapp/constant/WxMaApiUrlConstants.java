@@ -364,6 +364,8 @@ public class WxMaApiUrlConstants {
     String SET_USER_STORAGE =
         "https://api.weixin.qq.com/wxa/set_user_storage?appid=%s&signature=%s&openid=%s&sig_method=%s";
     String GET_PHONE_NUMBER_URL = "https://api.weixin.qq.com/wxa/business/getuserphonenumber";
+    /** 多端登录验证接口 */
+    String CODE_2_VERIFY_INFO_URL = "https://api.weixin.qq.com/wxa/sec/checkcode2verifyinfo";
   }
 
   public interface Ocr {
@@ -885,6 +887,22 @@ public class WxMaApiUrlConstants {
         "https://api.weixin.qq.com/xpay/start_publish_goods?pay_sig=%s";
     String QUERY_PUBLISH_GOODS_URL =
         "https://api.weixin.qq.com/xpay/query_publish_goods?pay_sig=%s";
+    String QUERY_BIZ_BALANCE_URL =
+      "https://api.weixin.qq.com/xpay/query_biz_balance?pay_sig=%s";
+    String QUERY_TRANSFER_ACCOUNT_URL = "https://api.weixin.qq.com/xpay/query_transfer_account?pay_sig=%s";
+    String QUERY_ADVER_FUNDS_URL = "https://api.weixin.qq.com/xpay/query_adver_funds?pay_sig=%s";
+    String CREATE_FUNDS_BILL_URL = "https://api.weixin.qq.com/xpay/create_funds_bill?pay_sig=%s";
+    String BIND_TRANSFER_ACCOUNT_URL = "https://api.weixin.qq.com/xpay/bind_transfer_accout?pay_sig=%s";
+    String QUERY_FUNDS_BILL_URL = "https://api.weixin.qq.com/xpay/query_funds_bill?pay_sig=%s";
+    String QUERY_RECOVER_BILL_URL = "https://api.weixin.qq.com/xpay/query_recover_bill?pay_sig=%s";
+    String GET_COMPLAINT_LIST_URL = "https://api.weixin.qq.com/xpay/get_complaint_list?pay_sig=%s";
+    String GET_COMPLAINT_DETAIL_URL = "https://api.weixin.qq.com/xpay/get_complaint_detail?pay_sig=%s";
+    String GET_NEGOTIATION_HISTORY_URL = "https://api.weixin.qq.com/xpay/get_negotiation_history?pay_sig=%s";
+    String RESPONSE_COMPLAINT_URL = "https://api.weixin.qq.com/xpay/response_complaint?pay_sig=%s";
+    String COMPLETE_COMPLAINT_URL = "https://api.weixin.qq.com/xpay/complete_complaint?pay_sig=%s";
+    String UPLOAD_VP_FILE_URL = "https://api.weixin.qq.com/xpay/upload_vp_file?pay_sig=%s";
+    String GET_UPLOAD_FILE_SIGN_URL = "https://api.weixin.qq.com/xpay/get_upload_file_sign?pay_sig=%s";
+    String DOWNLOAD_ADVERFUNDS_ORDER_URL = "https://api.weixin.qq.com/xpay/download_adverfunds_order?pay_sig=%s";
   }
 
   /**
@@ -947,5 +965,35 @@ public class WxMaApiUrlConstants {
     String CANCEL_ORDER = "https://api.weixin.qq.com/cgi-bin/express/intracity/cancelorder";
 
     String GET_CITY = "https://api.weixin.qq.com/cgi-bin/express/intracity/getcity";
+  }
+
+  /**
+   * 小程序交易投诉接口
+   *
+   * <pre>
+   * 文档地址：https://developers.weixin.qq.com/miniprogram/dev/platform-capabilities/business-capabilities/guarantee/complaint.html
+   * </pre>
+   */
+  public interface Complaint {
+    /** 查询投诉单列表 */
+    String QUERY_COMPLAINTS_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/list";
+    /** 查询投诉单详情 */
+    String GET_COMPLAINT_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/detail";
+    /** 查询投诉协商历史 */
+    String QUERY_NEGOTIATION_HISTORY_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/negotiation/history";
+    /** 创建投诉通知回调地址 */
+    String ADD_COMPLAINT_NOTIFY_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/notify/add";
+    /** 查询投诉通知回调地址 */
+    String GET_COMPLAINT_NOTIFY_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/notify/get";
+    /** 更新投诉通知回调地址 */
+    String UPDATE_COMPLAINT_NOTIFY_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/notify/update";
+    /** 删除投诉通知回调地址 */
+    String DELETE_COMPLAINT_NOTIFY_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/notify/delete";
+    /** 提交回复 */
+    String SUBMIT_RESPONSE_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/response";
+    /** 反馈处理完成 */
+    String COMPLETE_COMPLAINT_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/complete";
+    /** 上传反馈图片 */
+    String UPLOAD_RESPONSE_IMAGE_URL = "https://api.weixin.qq.com/cgi-bin/miniapp/complaint/upload";
   }
 }

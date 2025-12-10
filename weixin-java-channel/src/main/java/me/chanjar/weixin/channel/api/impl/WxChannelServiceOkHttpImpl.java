@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.channel.bean.token.StableTokenParam;
 import me.chanjar.weixin.channel.config.WxChannelConfig;
 import me.chanjar.weixin.channel.util.JsonUtils;
-import me.chanjar.weixin.common.util.http.HttpType;
+import me.chanjar.weixin.common.util.http.HttpClientType;
 import me.chanjar.weixin.common.util.http.okhttp.DefaultOkHttpClientBuilder;
 import me.chanjar.weixin.common.util.http.okhttp.OkHttpProxyInfo;
 import okhttp3.Authenticator;
@@ -41,11 +41,11 @@ public class WxChannelServiceOkHttpImpl extends BaseWxChannelServiceImpl<OkHttpC
       this.httpProxy = OkHttpProxyInfo.httpProxy(this.config.getHttpProxyHost(), this.config.getHttpProxyPort(), this.config.getHttpProxyUsername(), this.config.getHttpProxyPassword());
       okhttp3.OkHttpClient.Builder clientBuilder = new okhttp3.OkHttpClient.Builder();
       clientBuilder.proxy(this.getRequestHttpProxy().getProxy());
-      clientBuilder.authenticator(new Authenticator() {
+      clientBuilder.proxyAuthenticator(new Authenticator() {
         @Override
         public Request authenticate(Route route, Response response) throws IOException {
           String credential = Credentials.basic(WxChannelServiceOkHttpImpl.this.httpProxy.getProxyUsername(), WxChannelServiceOkHttpImpl.this.httpProxy.getProxyPassword());
-          return response.request().newBuilder().header("Authorization", credential).build();
+          return response.request().newBuilder().header("Proxy-Authorization", credential).build();
         }
       });
       this.httpClient = clientBuilder.build();
@@ -65,8 +65,8 @@ public class WxChannelServiceOkHttpImpl extends BaseWxChannelServiceImpl<OkHttpC
   }
 
   @Override
-  public HttpType getRequestType() {
-    return HttpType.OK_HTTP;
+  public HttpClientType getRequestType() {
+    return HttpClientType.OK_HTTP;
   }
 
   @Override

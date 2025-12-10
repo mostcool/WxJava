@@ -38,6 +38,7 @@ import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.common.error.WxMaErrorMsgEnum;
 import me.chanjar.weixin.common.error.WxRuntimeException;
 import me.chanjar.weixin.common.executor.CommonUploadRequestExecutor;
 import me.chanjar.weixin.common.service.WxImgProcService;
@@ -111,6 +112,8 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
   private final WxMaSchemeService schemeService = new WxMaSchemeServiceImpl(this);
   private final WxMaAnalysisService analysisService = new WxMaAnalysisServiceImpl(this);
   private final WxMaCodeService codeService = new WxMaCodeServiceImpl(this);
+  private final WxMaCustomserviceWorkService customserviceWorkService = new WxMaCustomserviceWorkServiceImpl(this);
+  private final WxMaKefuService maKefuService = new WxMaKefuServiceImpl(this);
   private final WxMaInternetService internetService = new WxMaInternetServiceImpl(this);
   private final WxMaSettingService settingService = new WxMaSettingServiceImpl(this);
   private final WxMaJsapiService jsapiService = new WxMaJsapiServiceImpl(this);
@@ -163,13 +166,14 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
       new WxMaExpressDeliveryReturnServiceImpl(this);
   private final WxMaPromotionService wxMaPromotionService = new WxMaPromotionServiceImpl(this);
   private final WxMaIntracityService intracityService = new WxMaIntracityServiceImpl(this);
+  private final WxMaComplaintService complaintService = new WxMaComplaintServiceImpl(this);
 
   private Map<String, WxMaConfig> configMap = new HashMap<>();
   private int retrySleepMillis = 1000;
   private int maxRetryTimes = 5;
 
   @Override
-  public RequestHttp getRequestHttp() {
+  public RequestHttp<H, P> getRequestHttp() {
     return this;
   }
 
@@ -232,7 +236,7 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
     try {
       return SHA1.gen(this.getWxMaConfig().getToken(), timestamp, nonce).equals(signature);
     } catch (Exception e) {
-      log.error("Checking signature failed, and the reason is :" + e.getMessage());
+      log.error("Checking signature failed, and the reason is :{}", e.getMessage());
       return false;
     }
   }
@@ -297,7 +301,7 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
 
   private boolean isApiSignatureRequired(String url) {
     return this.getWxMaConfig().getApiSignatureAesKey() != null
-        && Arrays.stream(urlPathSupportApiSignature).anyMatch(part -> url.contains(part));
+        && Arrays.stream(urlPathSupportApiSignature).anyMatch(url::contains);
   }
 
   @Override
@@ -361,7 +365,7 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
 
   @Override
   public WxMaApiResponse execute(
-      ApiSignaturePostRequestExecutor executor,
+      ApiSignaturePostRequestExecutor<?, ?> executor,
       String uri,
       Map<String, String> headers,
       String data)
@@ -423,8 +427,9 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
     }
     String accessToken = getAccessToken(false);
 
-    if (StringUtils.isNotEmpty(this.getWxMaConfig().getApiHostUrl())) {
-      uri = uri.replace("https://api.weixin.qq.com", this.getWxMaConfig().getApiHostUrl());
+    String effectiveApiHostUrl = this.getWxMaConfig().getEffectiveApiHostUrl();
+    if (!WxMaConfig.DEFAULT_API_HOST_URL.equals(effectiveApiHostUrl)) {
+      uri = uri.replace(WxMaConfig.DEFAULT_API_HOST_URL, effectiveApiHostUrl);
     }
 
     String uriWithAccessToken =
@@ -458,7 +463,12 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
       }
 
       if (error.getErrorCode() != 0) {
-        log.warn("\n【请求地址】: {}\n【请求参数】：{}\n【错误信息】：{}", uriWithAccessToken, dataForLog, error);
+        if (error.getErrorCode() == WxMaErrorMsgEnum.CODE_43101.getCode()) {
+          // 43101 日志太多, 打印为debug, 其他情况打印为warn
+          log.debug("\n【请求地址】: {}\n【请求参数】：{}\n【错误信息】：{}", uriWithAccessToken, dataForLog, error);
+        } else {
+          log.warn("\n【请求地址】: {}\n【请求参数】：{}\n【错误信息】：{}", uriWithAccessToken, dataForLog, error);
+        }
         throw new WxErrorException(error, e);
       }
       return null;
@@ -643,6 +653,16 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
   @Override
   public WxMaCodeService getCodeService() {
     return this.codeService;
+  }
+
+  @Override
+  public WxMaCustomserviceWorkService getCustomserviceWorkService() {
+    return this.customserviceWorkService;
+  }
+
+  @Override
+  public WxMaKefuService getKefuService() {
+    return this.maKefuService;
   }
 
   @Override
@@ -892,6 +912,10 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
     String rndStr = UUID.randomUUID().toString().replace("-", "").substring(0, 30);
     String aesKey = this.getWxMaConfig().getApiSignatureAesKey();
     String aesKeySn = this.getWxMaConfig().getApiSignatureAesKeySn();
+    String rsaKeySn = this.getWxMaConfig().getApiSignatureRsaPrivateKeySn();
+    if (rsaKeySn == null || rsaKeySn.isEmpty()) {
+      throw new SecurityException("ApiSignatureRsaPrivateKeySn不能为空，请检查配置");
+    }
 
     jsonObject.addProperty("_n", rndStr);
     jsonObject.addProperty("_appid", appId);
@@ -936,7 +960,7 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
       String requestJson = reqData.toString();
 
       // 计算签名 RSA
-      String payload = urlPath + "\n" + appId + "\n" + timestamp + "\n" + requestJson;
+      String payload = urlPath + "\n" + appId + "\n" + timestamp + "\n" + rsaKeySn + "\n" + requestJson;
       byte[] dataBuffer = payload.getBytes(StandardCharsets.UTF_8);
       RSAPrivateKey priKey;
       try {
@@ -965,6 +989,7 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
       header.put("Wechatmp-Signature", signatureString);
       header.put("Wechatmp-Appid", appId);
       header.put("Wechatmp-TimeStamp", String.valueOf(timestamp));
+      header.put("Wechatmp-Serial", rsaKeySn);
       log.debug("发送请求uri:{}, headers:{}, postData:{}", url, header, requestJson);
       WxMaApiResponse response =
           this.execute(ApiSignaturePostRequestExecutor.create(this), url, header, requestJson);
@@ -1017,5 +1042,10 @@ public abstract class BaseWxMaServiceImpl<H, P> implements WxMaService, RequestH
   @Override
   public WxMaIntracityService getIntracityService() {
     return this.intracityService;
+  }
+
+  @Override
+  public WxMaComplaintService getComplaintService() {
+    return this.complaintService;
   }
 }
