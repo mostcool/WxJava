@@ -24,7 +24,12 @@ public class XStreamTransformer {
   }
 
   /**
-   * xml -> pojo.
+   * {@code xml -> pojo.}
+   *
+   * @param <T>   返回类型
+   * @param clazz 类型
+   * @param xml   xml字符串
+   * @return 转换后的对象
    */
   @SuppressWarnings("unchecked")
   public static <T> T fromXml(Class<T> clazz, String xml) {
@@ -32,6 +37,14 @@ public class XStreamTransformer {
     return object;
   }
 
+  /**
+   * {@code xml -> pojo.}
+   *
+   * @param <T>   返回类型
+   * @param clazz 类型
+   * @param is    输入流
+   * @return 转换后的对象
+   */
   @SuppressWarnings("unchecked")
   public static <T> T fromXml(Class<T> clazz, InputStream is) {
     T object = (T) CLASS_2_XSTREAM_INSTANCE.get(clazz).fromXML(is);
@@ -39,7 +52,12 @@ public class XStreamTransformer {
   }
 
   /**
-   * pojo -> xml.
+   * {@code pojo -> xml.}
+   *
+   * @param <T>    类型参数
+   * @param clazz  类型
+   * @param object 对象
+   * @return xml字符串
    */
   public static <T> String toXml(Class<T> clazz, T object) {
     return CLASS_2_XSTREAM_INSTANCE.get(clazz).toXML(object);
@@ -83,6 +101,8 @@ public class XStreamTransformer {
     if (clz.equals(WxMaMessage.class)) {
       // 操蛋的微信，模板消息推送成功的消息是MsgID，其他消息推送过来是MsgId
       xstream.aliasField("MsgID", WxMaMessage.class, "msgId");
+      // xpay 事件推送使用 OpenId（小写 d），但通用字段注解为 OpenID（大写 D）
+      xstream.aliasField("OpenId", WxMaMessage.class, "openId");
     }
 
     register(clz, xstream);

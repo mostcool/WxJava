@@ -187,7 +187,9 @@ public abstract class AbstractWxCpTpInRedisConfigImpl extends WxCpTpDefaultConfi
 
 
   /**
-   * 企微服务商企业ID & 企业secret, 来自于企微配置
+   * {@code 企微服务商企业ID & 企业secret, 来自于企微配置}
+   *
+   * @return 企业ID
    */
   @Override
   public String getCorpId() {
@@ -222,7 +224,7 @@ public abstract class AbstractWxCpTpInRedisConfigImpl extends WxCpTpDefaultConfi
 
     WxAccessToken accessTokenEntity = new WxAccessToken();
     accessTokenEntity.setAccessToken(accessToken);
-    accessTokenEntity.setExpiresIn((int) ((expire - System.currentTimeMillis()) / 1000 + 200));
+    accessTokenEntity.setExpiresIn(Math.max(Math.toIntExact(expire), 0));
     return accessTokenEntity;
   }
 

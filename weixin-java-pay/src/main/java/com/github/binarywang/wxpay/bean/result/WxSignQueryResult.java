@@ -86,7 +86,7 @@ public class WxSignQueryResult extends BaseWxPayResult implements Serializable {
    * 协议解约方式
    * 非必传
    */
-  @XStreamAlias("contract_terminated_mode")
+  @XStreamAlias("contract_termination_mode")
   private Integer contractTerminatedMode;
 
   /**
@@ -102,6 +102,36 @@ public class WxSignQueryResult extends BaseWxPayResult implements Serializable {
   @XStreamAlias("openid")
   private String openId;
 
+  /**
+   * 变更类型， ADD：签约，DELETE：解约
+   * 签约/解约回调通知时返回
+   */
+  @XStreamAlias("change_type")
+  private String changeType;
+
+  /**
+   * 操作时间
+   * 签约/解约回调通知时返回
+   */
+  @XStreamAlias("operate_time")
+  private String operateTime;
+
+  /**
+   * 为保持向后兼容保留的构造函数（不含 changeType、operateTime 字段）。
+   *
+   * @deprecated 请使用包含所有字段的全参构造函数。
+   */
+  @Deprecated
+  public WxSignQueryResult(String contractId, String planId, Long requestSerial,
+                           String contractCode, String contractDisplayAccount,
+                           Integer contractState, String contractSignedTime,
+                           String contractExpiredTime, String contractTerminatedTime,
+                           Integer contractTerminatedMode, String contractTerminationRemark,
+                           String openId) {
+    this(contractId, planId, requestSerial, contractCode, contractDisplayAccount,
+      contractState, contractSignedTime, contractExpiredTime, contractTerminatedTime,
+      contractTerminatedMode, contractTerminationRemark, openId, null, null);
+  }
 
   @Override
   protected void loadXml(Document d) {
@@ -112,11 +142,13 @@ public class WxSignQueryResult extends BaseWxPayResult implements Serializable {
     contractDisplayAccount = readXmlString(d, "contract_display_account");
     contractState = readXmlInteger(d, "contract_state");
     contractSignedTime = readXmlString(d, "contract_signed_time");
-    contractExpiredTime = readXmlString(d, "contrace_Expired_time");
+    contractExpiredTime = readXmlString(d, "contract_expired_time");
     contractTerminatedTime = readXmlString(d, "contract_terminated_time");
-    contractTerminatedMode = readXmlInteger(d, "contract_terminate_mode");
+    contractTerminatedMode = readXmlInteger(d, "contract_termination_mode");
     contractTerminationRemark = readXmlString(d, "contract_termination_remark");
     openId = readXmlString(d, "openid");
+    changeType = readXmlString(d, "change_type");
+    operateTime = readXmlString(d, "operate_time");
   }
 
   @Override

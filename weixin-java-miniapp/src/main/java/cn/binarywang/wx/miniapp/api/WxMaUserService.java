@@ -60,6 +60,12 @@ public interface WxMaUserService {
   /**
    * 获取手机号信息,基础库:2.21.2及以上或2023年8月28日起
    *
+   * <p>若已配置 {@code apiSignatureAesKey} 及 {@code apiSignatureRsaPrivateKey} 开启服务端 API 签名，
+   * 该接口请求将自动走加密 + RSA 签名路径（见
+   * <a href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html">API签名文档</a>）。
+   * 签名串格式为 {@code urlpath\nappid\ntimestamp\npostdata}（4 个字段），
+   * RSA 私钥序列号通过请求头 {@code Wechatmp-Serial} 传递，不包含在签名串中。
+   *
    * @param code 每个code只能使用一次，code的有效期为5min。code获取方式参考<a href="https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/getPhoneNumber.html">手机号快速验证组件</a>
    * @return 用户手机号信息
    * @throws WxErrorException .
@@ -102,4 +108,20 @@ public interface WxMaUserService {
    * @throws WxErrorException 调用微信接口失败时抛出
    */
   WxMaCode2VerifyInfoResult getCode2VerifyInfo(String code, String checkcode) throws WxErrorException;
+
+  /**
+   * 检查登录态（checkSessionKey）.
+   * <p>
+   * 检验登录态是否有效，用于虚拟支付等场景构建用户签名前的登录态验证。
+   * 登录态有效时返回 {@code true}；登录态已失效时，微信服务端将返回错误码（如 87009），
+   * 并以 {@link me.chanjar.weixin.common.error.WxErrorException} 的形式抛出。
+   * </p>
+   * 文档地址：<a href="https://developers.weixin.qq.com/miniprogram/dev/server/API/user-login/api_checksessionkey.html">检查登录态</a>
+   *
+   * @param openid     用户唯一标识符
+   * @param sessionKey 用户的 session_key，通过 {@link #getSessionInfo(String)} 获取
+   * @return 登录态有效时返回 {@code true}
+   * @throws WxErrorException 登录态已失效或调用微信接口失败时抛出（失效时 errcode 为 87009）
+   */
+  boolean checkSessionKey(String openid, String sessionKey) throws WxErrorException;
 }
