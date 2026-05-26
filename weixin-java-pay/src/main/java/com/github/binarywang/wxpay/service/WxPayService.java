@@ -5,12 +5,13 @@ import com.github.binarywang.wxpay.bean.coupon.*;
 import com.github.binarywang.wxpay.bean.notify.*;
 import com.github.binarywang.wxpay.bean.request.*;
 import com.github.binarywang.wxpay.bean.result.*;
-import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
 import com.github.binarywang.wxpay.bean.result.enums.GlobalTradeTypeEnum;
+import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
 import com.github.binarywang.wxpay.bean.transfer.TransferBillsNotifyResult;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.constant.WxPayConstants;
 import com.github.binarywang.wxpay.exception.WxPayException;
+import com.github.binarywang.wxpay.exception.WxSignTestException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 
@@ -399,6 +400,13 @@ public interface WxPayService {
    * @param entPayService the ent pay service
    */
   void setEntPayService(EntPayService entPayService);
+
+  /**
+   * 获取商户被管控能力及原因查询接口
+   *
+   * @return MerchantLimitationService
+   */
+  MerchantLimitationService getMerchantLimitationService();
 
   /**
    * <pre>
@@ -1063,6 +1071,16 @@ public interface WxPayService {
   WxPayOrderNotifyResult parseOrderNotifyResult(String xmlData, String signType) throws WxPayException;
 
   /**
+   * 校验通知签名
+   *
+   * @param header 通知头信息
+   * @param data   通知数据
+   * @return true:校验通过 false:校验不通过
+   * @throws WxSignTestException 微信支付签名探测流量异常
+   */
+  boolean verifyNotifySign(SignatureHeader header, String data) throws WxSignTestException;
+
+  /**
    * 解析支付结果v3通知. 直连商户模式
    * 详见https://pay.weixin.qq.com/wiki/doc/apiv3/apis/chapter3_1_5.shtml
    *
@@ -1163,6 +1181,16 @@ public interface WxPayService {
    * @throws WxPayException the wx pay exception
    */
   WxPayPartnerRefundNotifyV3Result parsePartnerRefundNotifyV3Result(String notifyData, SignatureHeader header) throws WxPayException;
+
+  /**
+   * 解析合作伙伴订阅通知
+   *
+   * @param notifyData 通知数据
+   * @param header     通知头部数据
+   * @return 合作伙伴订阅通知
+   * @throws WxPayException the wx pay exception
+   */
+  PartnerSubscribeNotifyResult parsePartnerSubscribeNotify(String notifyData, SignatureHeader header) throws WxPayException;
 
   /**
    * 解析扫码支付回调通知

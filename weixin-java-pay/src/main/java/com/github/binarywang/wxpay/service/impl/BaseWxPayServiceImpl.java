@@ -1,21 +1,17 @@
 package com.github.binarywang.wxpay.service.impl;
 
-import static com.github.binarywang.wxpay.constant.WxPayConstants.QUERY_COMMENT_DATE_FORMAT;
-import static com.github.binarywang.wxpay.constant.WxPayConstants.TarType;
-import com.github.binarywang.wxpay.bean.coupon.*;
-import com.github.binarywang.wxpay.bean.notify.*;
-import com.github.binarywang.wxpay.bean.request.*;
-import com.github.binarywang.wxpay.bean.result.*;
-import com.github.binarywang.wxpay.service.*;
-import java.util.*;
-import com.github.binarywang.wxpay.bean.result.enums.GlobalTradeTypeEnum;
-import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
 import com.github.binarywang.utils.qrcode.QrcodeUtils;
 import com.github.binarywang.wxpay.bean.WxPayApiData;
+import com.github.binarywang.wxpay.bean.coupon.*;
+import com.github.binarywang.wxpay.bean.notify.*;
 import com.github.binarywang.wxpay.bean.order.WxPayAppOrderResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMpOrderResult;
 import com.github.binarywang.wxpay.bean.order.WxPayMwebOrderResult;
 import com.github.binarywang.wxpay.bean.order.WxPayNativeOrderResult;
+import com.github.binarywang.wxpay.bean.request.*;
+import com.github.binarywang.wxpay.bean.result.*;
+import com.github.binarywang.wxpay.bean.result.enums.GlobalTradeTypeEnum;
+import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
 import com.github.binarywang.wxpay.bean.transfer.TransferBillsNotifyResult;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.config.WxPayConfigHolder;
@@ -23,6 +19,7 @@ import com.github.binarywang.wxpay.constant.WxPayConstants.SignType;
 import com.github.binarywang.wxpay.constant.WxPayConstants.TradeType;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.exception.WxSignTestException;
+import com.github.binarywang.wxpay.service.*;
 import com.github.binarywang.wxpay.util.SignUtils;
 import com.github.binarywang.wxpay.util.XmlConfig;
 import com.github.binarywang.wxpay.util.ZipUtils;
@@ -32,6 +29,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.error.WxRuntimeException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.http.entity.ContentType;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,15 +45,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipException;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.error.WxRuntimeException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.apache.http.entity.ContentType;
+
+import static com.github.binarywang.wxpay.constant.WxPayConstants.QUERY_COMMENT_DATE_FORMAT;
+import static com.github.binarywang.wxpay.constant.WxPayConstants.TarType;
 
 /**
  * <pre>
@@ -142,6 +144,9 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   
   @Getter
   private final MiPayService miPayService = new MiPayServiceImpl(this);
+
+  @Getter
+  private final MerchantLimitationService merchantLimitationService = new MerchantLimitationServiceImpl(this);
 
   protected Map<String, WxPayConfig> configMap = new ConcurrentHashMap<>();
 
@@ -363,9 +368,9 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
       if (StringUtils.isNotBlank(this.getConfig().getApiV3Key())) {
         throw new WxRuntimeException("微信支付V3 目前不支持沙箱模式！");
       }
-      return this.getConfig().getApiHostUrl() + "/xdc/apiv2sandbox";
+      return this.getConfig().getApiHostWithPathPrefix() + "/xdc/apiv2sandbox";
     }
-    return this.getConfig().getApiHostUrl();
+    return this.getConfig().getApiHostWithPathPrefix();
   }
 
   @Override
@@ -523,7 +528,8 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
    * @param data   通知数据
    * @return true:校验通过 false:校验不通过
    */
-  private boolean verifyNotifySign(SignatureHeader header, String data) throws WxSignTestException {
+  @Override
+  public boolean verifyNotifySign(SignatureHeader header, String data) throws WxSignTestException {
     String wxPaySign = header.getSignature();
     if (wxPaySign.startsWith("WECHATPAY/SIGNTEST/")) {
       throw new WxSignTestException("微信支付签名探测流量");
@@ -629,6 +635,11 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   @Override
   public WxPayPartnerRefundNotifyV3Result parsePartnerRefundNotifyV3Result(String notifyData, SignatureHeader header) throws WxPayException {
     return this.baseParseOrderNotifyV3Result(notifyData, header, WxPayPartnerRefundNotifyV3Result.class, WxPayPartnerRefundNotifyV3Result.DecryptNotifyResult.class);
+  }
+
+  @Override
+  public PartnerSubscribeNotifyResult parsePartnerSubscribeNotify(String notifyData, SignatureHeader header) throws WxPayException {
+    return this.baseParseOrderNotifyV3Result(notifyData, header, PartnerSubscribeNotifyResult.class, PartnerSubscribeNotifyResult.DecryptNotifyResult.class);
   }
 
   @Override
@@ -951,7 +962,7 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
       request.setSubMchId(this.getConfig().getSubMchId());
     }
 
-    String url = this.getPayBaseUrl() + tradeType.getBasePartnerUrl();
+    String url = this.getPayBaseUrl() + tradeType.getPartnerUrl();
     String response = this.postV3WithWechatpaySerial(url, GSON.toJson(request));
     return GSON.fromJson(response, WxPayUnifiedOrderV3Result.class);
   }
@@ -968,7 +979,7 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
       request.setNotifyUrl(this.getConfig().getNotifyUrl());
     }
 
-    String url = this.getPayBaseUrl() + tradeType.getPartnerUrl();
+    String url = this.getPayBaseUrl() + tradeType.getMerchantUrl();
     String response = this.postV3WithWechatpaySerial(url, GSON.toJson(request));
     return GSON.fromJson(response, WxPayUnifiedOrderV3Result.class);
   }
@@ -1352,8 +1363,8 @@ public abstract class BaseWxPayServiceImpl implements WxPayService {
   @Override
   public WxPayCodepayResult codepay(WxPayCodepayRequest request) throws WxPayException {
     // 判断是否为服务商模式：如果设置了sp_appid或sp_mchid或sub_mchid中的任何一个，则认为是服务商模式
-    boolean isPartnerMode = StringUtils.isNotBlank(request.getSpAppid()) 
-        || StringUtils.isNotBlank(request.getSpMchid()) 
+    boolean isPartnerMode = StringUtils.isNotBlank(request.getSpAppid())
+        || StringUtils.isNotBlank(request.getSpMchid())
         || StringUtils.isNotBlank(request.getSubMchid());
 
     if (isPartnerMode) {

@@ -1,13 +1,17 @@
 package com.github.binarywang.wxpay.service.impl;
-import com.google.common.collect.Lists;
 
 import com.github.binarywang.wxpay.bean.ecommerce.*;
 import com.github.binarywang.wxpay.bean.ecommerce.enums.SpAccountTypeEnum;
-import com.github.binarywang.wxpay.bean.ecommerce.enums.TradeTypeEnum;
+import com.github.binarywang.wxpay.bean.notify.SignatureHeader;
+import com.github.binarywang.wxpay.bean.request.CombineTransactionsRequest;
+import com.github.binarywang.wxpay.bean.request.WxPayPartnerOrderQueryV3Request;
+import com.github.binarywang.wxpay.bean.result.CombineTransactionsResult;
+import com.github.binarywang.wxpay.bean.result.WxPayPartnerOrderQueryV3Result;
+import com.github.binarywang.wxpay.bean.result.enums.TradeTypeEnum;
 import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.testbase.ApiTestModule;
-import com.google.gson.GsonBuilder;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.RandomUtils;
@@ -42,16 +46,16 @@ public class EcommerceServiceImplTest {
 
     SignatureHeader header = new SignatureHeader();
     header.setNonce(nonce);
-    header.setSerialNo(serialNo);
+    header.setSerial(serialNo);
     header.setTimeStamp(timeStamp);
-    header.setSigned(signed);
+    header.setSignature(signed);
 
     String beforeSign = String.format("%s\n%s\n%s\n",
       header.getTimeStamp(),
       header.getNonce(),
       notifyData);
-    boolean signResult = wxPayService.getConfig().getVerifier().verify(header.getSerialNo(),
-      beforeSign.getBytes(StandardCharsets.UTF_8), header.getSigned());
+    boolean signResult = wxPayService.getConfig().getVerifier().verify(header.getSerial(),
+      beforeSign.getBytes(StandardCharsets.UTF_8), header.getSignature());
     log.info("签名结果:{} \nheader:{} \ndata:{}", signResult, header, notifyData);
   }
 
@@ -97,23 +101,23 @@ public class EcommerceServiceImplTest {
     subOrder2.setAmount(requestAmount);
 
     request.setSubOrders(Arrays.asList(subOrder1, subOrder2));
-    TransactionsResult result = wxPayService.getEcommerceService().combine(TradeTypeEnum.JSAPI, request);
+    CombineTransactionsResult result = wxPayService.getEcommerceService().combine(TradeTypeEnum.JSAPI, request);
 
     System.out.println("result = " + result);
   }
 
   @Test
   public void testQueryPartnerTransactions() throws WxPayException {
-    PartnerTransactionsQueryRequest request = new PartnerTransactionsQueryRequest();
+    WxPayPartnerOrderQueryV3Request request = new WxPayPartnerOrderQueryV3Request();
     //服务商商户号
-    request.setSpMchid("");
+    request.setSpMchId("");
     //二级商户号
-    request.setSubMchid("");
+    request.setSubMchId("");
     //商户订单号
     request.setOutTradeNo("");
     //微信订单号
     request.setTransactionId("");
-    PartnerTransactionsResult result = wxPayService.getEcommerceService().queryPartnerTransactions(request);
+    WxPayPartnerOrderQueryV3Result result = wxPayService.getEcommerceService().queryPartnerOrder(request);
     System.out.println("result = " + result);
   }
 
