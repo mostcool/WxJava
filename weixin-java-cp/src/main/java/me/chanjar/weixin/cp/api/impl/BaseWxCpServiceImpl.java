@@ -77,6 +77,7 @@ public abstract class BaseWxCpServiceImpl<H, P> implements WxCpService, RequestH
   private final WxCpCorpGroupService corpGroupService = new WxCpCorpGroupServiceImpl(this);
   private final WxCpIntelligentRobotService intelligentRobotService = new WxCpIntelligentRobotServiceImpl(this);
   private final WxCpHrService hrService = new WxCpHrServiceImpl(this);
+  private final WxCpTodoService todoService = new WxCpTodoServiceImpl(this);
 
   /**
    * 全局的是否正在刷新access token的锁.
@@ -309,6 +310,29 @@ public abstract class BaseWxCpServiceImpl<H, P> implements WxCpService, RequestH
     String msgAuditAccessToken = getMsgAuditAccessToken(false);
     // 拼接access_token参数
     String urlWithToken = url + (url.contains("?") ? "&" : "?") + "access_token=" + msgAuditAccessToken;
+    // 使用executeNormal方法，不自动添加token
+    return this.executeNormal(SimplePostRequestExecutor.create(this), urlWithToken, postData);
+  }
+
+  @Override
+  public String getForContact(String url, String queryParam) throws WxErrorException {
+    // 获取通讯录同步专用的access token
+    String contactAccessToken = getContactAccessToken(false);
+    // 拼接access_token参数
+    String urlWithToken = url + (url.contains("?") ? "&" : "?") + "access_token=" + contactAccessToken;
+    if (queryParam != null && !queryParam.isEmpty()) {
+      urlWithToken = urlWithToken + "&" + queryParam;
+    }
+    // 使用executeNormal方法，不自动添加token
+    return this.executeNormal(SimpleGetRequestExecutor.create(this), urlWithToken, null);
+  }
+
+  @Override
+  public String postForContact(String url, String postData) throws WxErrorException {
+    // 获取通讯录同步专用的access token
+    String contactAccessToken = getContactAccessToken(false);
+    // 拼接access_token参数
+    String urlWithToken = url + (url.contains("?") ? "&" : "?") + "access_token=" + contactAccessToken;
     // 使用executeNormal方法，不自动添加token
     return this.executeNormal(SimplePostRequestExecutor.create(this), urlWithToken, postData);
   }
@@ -729,5 +753,10 @@ public abstract class BaseWxCpServiceImpl<H, P> implements WxCpService, RequestH
   @Override
   public WxCpHrService getHrService() {
     return this.hrService;
+  }
+
+  @Override
+  public WxCpTodoService getTodoService() {
+    return this.todoService;
   }
 }
